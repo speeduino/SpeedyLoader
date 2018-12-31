@@ -10,6 +10,10 @@
  <meta charset="utf-8" />
  <meta name="viewport" content="width=device-width, initial-scale=1" />
  <link rel="stylesheet" href="assets/css/main.css" />
+
+<script src="renderer.js">
+</script>
+
  </head>
  <body>
 
@@ -18,8 +22,10 @@
  <div class="inner">
  <nav>
  <ul>
- <li><a href="#loader">Firmware Loader</a></li>
- <li><a href="#one">Firmware Details</a></li>
+ <li><a href="#loader">Choose Firmware</a></li>
+ <li><a href="#details">Firmware Details</a></li>
+ <li><a href="#port">Choose Port</a></li>
+ <li><a href="#upload">Upload</a></li>
  <li><a href="#help">Help</a></li>
  </ul>
  </nav>
@@ -29,7 +35,7 @@
  <!-- Wrapper -->
  <div id="wrapper">
 
- <!-- Loader -->
+ <!-- Choose Version -->
  <section id="loader" class="wrapper style1 fullscreen fade-up">
  <div class="inner">
  <center><img src="assets/speeduino logo_white.png" width="235"/></center>
@@ -40,7 +46,11 @@
         <li><input type='button' value="Download" onclick="downloadFW();" /></li>
         </ul>
  </p>
+ <div id="error"></div>
+ <div id="ports"></div>
  </div>
+
+
  
  <script>
         var request = require('request');
@@ -63,8 +73,8 @@
     </script>
  </section>
 
- <!-- One -->
- <section id="one" class="wrapper style2 spotlights">
+ <!-- Firmware details -->
+ <section id="details" class="wrapper style1-alt spotlights">
  <section>
  <a href="#" class="image"><img src="images/pic01.jpg" alt="" data-position="center center" /></a>
  <div class="content">
@@ -102,6 +112,22 @@
  </div>
  </section>
  </section>
+
+<!-- Choose Port -->
+<section id="port" class="wrapper style2 fullscreen fade-up">
+        <div class="inner">
+        <!--<h1>Firmware Loader</h1>-->
+        <p>Available Ports:
+        <select name="ports" class="select" id="portsSelect" size="10" width="20"></select>
+        <ul class="actions">
+                <li><input type='button' value="Refresh" onclick="refreshSerialPorts();" /></li>
+                <li><input type='button' value="Install" onclick="downloadFW();" /></li>
+        </ul>
+        </p>
+        </div>
+       
+        <div id="serialDetectError"></div>
+</section>
 
  <!-- Two -->
  <section id="two" class="wrapper style3 fade-up">

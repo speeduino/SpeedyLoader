@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const {download} = require('electron-dl')
+const exec = require('child_process').exec;
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -7,7 +8,7 @@ let win
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 600 })
+  win = new BrowserWindow({ width: 800, height: 600, backgroundColor: '#312450' })
 
   // and load the index.html of the app.
   win.loadFile('index.html')
@@ -46,7 +47,7 @@ app.on('activate', () => {
   }
 })
 
-ipcMain.on('download-btn', (e, args) => {
+ipcMain.on('download', (e, args) => {
 	download(BrowserWindow.getFocusedWindow(), args.url)
 		.then(dl => console.log(dl.getSavePath()))
 		.catch(console.error);
