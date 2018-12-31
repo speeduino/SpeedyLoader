@@ -1,0 +1,43 @@
+{
+  "name": "SpeedyLoader",
+  "version": "0.0.1",
+  "description": "Speeduino universal firmware loader",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron .",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/noisymime/SpeedyLoader"
+  },
+  "author": "Josh Stewart",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/noisymime/SpeedyLoader/issues"
+  },
+  "homepage": "https://github.com/noisymime/SpeedyLoader",
+  "devDependencies": {
+    "electron": "^4.0.0"
+  },
+  "dependencies": {
+    "electron-builder": "^20.38.4",
+    "electron-dl": "^1.12.0"
+  },
+  "build": {
+    "appId": "your.id",
+    "win": {
+      "target": [
+        "portable"
+      ]
+    },
+    "portable": {
+      "artifactName": "SpeeduinoLoader.exe"
+    },
+    "mac": {
+      "category": "your.app.category.type"
+    }
+  }
+}

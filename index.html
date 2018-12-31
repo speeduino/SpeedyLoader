@@ -1,0 +1,206 @@
+<!DOCTYPE HTML>
+<!--
+ Hyperspace by HTML5 UP
+ html5up.net | @ajlkn
+ Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html>
+ <head>
+ <title>Electron tutorial app</title>
+ <meta charset="utf-8" />
+ <meta name="viewport" content="width=device-width, initial-scale=1" />
+ <link rel="stylesheet" href="assets/css/main.css" />
+ </head>
+ <body>
+
+ <!-- Sidebar -->
+ <section id="sidebar">
+ <div class="inner">
+ <nav>
+ <ul>
+ <li><a href="#loader">Firmware Loader</a></li>
+ <li><a href="#one">Firmware Details</a></li>
+ <li><a href="#two">What we do</a></li>
+ <li><a href="#help">Help</a></li>
+ </ul>
+ </nav>
+ </div>
+ </section>
+
+ <!-- Wrapper -->
+ <div id="wrapper">
+
+ <!-- Loader -->
+ <section id="loader" class="wrapper style1 fullscreen fade-up">
+ <div class="inner">
+ <h1>Firmware Loader</h1>
+ <p>Available Firmwares:
+ <select name="firmwares" class="select" id="versionsSelect" size="10" width="20"></select>
+ <ul class="actions">
+        <li><input type='button' value="Download" onclick="downloadFW();" /></li>
+        </ul>
+ </p>
+ </div>
+ 
+ <script>
+        var request = require('request');
+        request.get('http://speeduino.com/fw/versions', function (error, response, body) {
+            if (!error && response.statusCode == 200) {
+    
+                var lines = body.split('\n');
+                // Continue with your processing here.
+                select = document.getElementById('versionsSelect');
+                for(var i = 0;i < lines.length;i++)
+                {
+                    var newOption = document.createElement('option');
+                    newOption.value = lines[i];
+                    newOption.innerHTML = lines[i];
+                    select.appendChild(newOption);
+                }
+                select.selectedIndex = 0;
+            }
+        });
+    </script>
+ </section>
+
+ <!-- One -->
+ <section id="one" class="wrapper style2 spotlights">
+ <section>
+ <a href="#" class="image"><img src="images/pic01.jpg" alt="" data-position="center center" /></a>
+ <div class="content">
+ <div class="inner">
+ <h2>Sed ipsum dolor</h2>
+ <p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus.</p>
+ <ul class="actions">
+ <li><a href="#" class="button">Learn more</a></li>
+ </ul>
+ </div>
+ </div>
+ </section>
+ <section>
+ <a href="#" class="image"><img src="images/pic02.jpg" alt="" data-position="top center" /></a>
+ <div class="content">
+ <div class="inner">
+ <h2>Feugiat consequat</h2>
+ <p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus.</p>
+ <ul class="actions">
+ <li><a href="#" class="button">Learn more</a></li>
+ </ul>
+ </div>
+ </div>
+ </section>
+ <section>
+ <a href="#" class="image"><img src="images/pic03.jpg" alt="" data-position="25% 25%" /></a>
+ <div class="content">
+ <div class="inner">
+ <h2>Ultricies aliquam</h2>
+ <p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus.</p>
+ <ul class="actions">
+ <li><a href="#" class="button">Learn more</a></li>
+ </ul>
+ </div>
+ </div>
+ </section>
+ </section>
+
+ <!-- Two -->
+ <section id="two" class="wrapper style3 fade-up">
+ <div class="inner">
+ <h2>What we do</h2>
+ <p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus, lacus eget hendrerit bibendum, urna est aliquam sem, sit amet imperdiet est velit quis lorem.</p>
+ <div class="features">
+ <section>
+ <span class="icon major fa-code"></span>
+ <h3>Lorem ipsum amet</h3>
+ <p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+ </section>
+ <section>
+ <span class="icon major fa-lock"></span>
+ <h3>Aliquam sed nullam</h3>
+ <p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+ </section>
+ <section>
+ <span class="icon major fa-cog"></span>
+ <h3>Sed erat ullam corper</h3>
+ <p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+ </section>
+ <section>
+ <span class="icon major fa-desktop"></span>
+ <h3>Veroeros quis lorem</h3>
+ <p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+ </section>
+ <section>
+ <span class="icon major fa-chain"></span>
+ <h3>Urna quis bibendum</h3>
+ <p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+ </section>
+ <section>
+ <span class="icon major fa-diamond"></span>
+ <h3>Aliquam urna dapibus</h3>
+ <p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+ </section>
+ </div>
+ <ul class="actions">
+ <li><a href="#" class="button">Learn more</a></li>
+ </ul>
+ </div>
+ </section>
+
+ <!-- Help -->
+ <section id="help" class="wrapper style1 fade-up">
+ <div class="inner">
+ <h2>Get in touch</h2>
+ <p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus, lacus eget hendrerit bibendum, urna est aliquam sem, sit amet imperdiet est velit quis lorem.</p>
+ <div class="split style1">
+ <section>
+ <ul class="contact">
+ <li>
+ <h3>Address</h3>
+ <span>12345 Somewhere Road #654<br />
+ Nashville, TN 00000-0000<br />
+ USA</span>
+ </li>
+ <li>
+ <h3>Email</h3>
+ <a href="#">user@untitled.tld</a>
+ </li>
+ <li>
+ <h3>Phone</h3>
+ <span>(000) 000-0000</span>
+ </li>
+ <li>
+ <h3>Social</h3>
+ <ul class="icons">
+ <li><a href="#" class="fa-twitter"><span class="label">Twitter</span></a></li>
+ <li><a href="#" class="fa-facebook"><span class="label">Facebook</span></a></li>
+ <li><a href="#" class="fa-github"><span class="label">GitHub</span></a></li>
+ <li><a href="#" class="fa-instagram"><span class="label">Instagram</span></a></li>
+ <li><a href="#" class="fa-linkedin"><span class="label">LinkedIn</span></a></li>
+ </ul>
+ </li>
+ </ul>
+ </section>
+ </div>
+ </div>
+ </section>
+
+ </div>
+
+ <!-- Footer -->
+ <footer id="footer" class="wrapper style1-alt">
+ <div class="inner">
+ <ul class="menu">
+ <li>&copy; Untitled. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+ </ul>
+ </div>
+ </footer>
+
+ <!-- Scripts -->
+ <script>window.$ = window.jQuery = require('./assets/js/jquery.min.js');</script>
+ <script src="assets/js/jquery.scrollex.min.js"></script>
+ <script src="assets/js/jquery.scrolly.min.js"></script>
+ <script src="assets/js/skel.min.js"></script>
+ <script src="assets/js/util.js"></script>
+ <script src="assets/js/main.js"></script>
+ </body>
+</html>
