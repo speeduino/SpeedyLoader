@@ -41,76 +41,22 @@
  <center><img src="assets/speeduino logo_white.png" width="235"/></center>
  <!--<h1>Firmware Loader</h1>-->
  <p>Available Firmwares:
- <select name="firmwares" class="select" id="versionsSelect" size="10" width="20"></select>
- <ul class="actions">
+ <select name="firmwares" class="select" id="versionsSelect" size="10" width="20" onClick="refreshDetailsLink();" ></select>
+    <ul class="actions">
+        <li><input type='button' value="View Firmware Details" onclick="downloadFW();" /></li>
         <li><input type='button' value="Download" onclick="downloadFW();" /></li>
-        </ul>
+    </ul>
  </p>
  <div id="error"></div>
  <div id="ports"></div>
  </div>
 
 
- 
- <script>
-        var request = require('request');
-        request.get('http://speeduino.com/fw/versions', function (error, response, body) {
-            if (!error && response.statusCode == 200) {
-    
-                var lines = body.split('\n');
-                // Continue with your processing here.
-                select = document.getElementById('versionsSelect');
-                for(var i = 0;i < lines.length;i++)
-                {
-                    var newOption = document.createElement('option');
-                    newOption.value = lines[i];
-                    newOption.innerHTML = lines[i];
-                    select.appendChild(newOption);
-                }
-                select.selectedIndex = 0;
-            }
-        });
-    </script>
  </section>
 
  <!-- Firmware details -->
  <section id="details" class="wrapper style1-alt spotlights">
- <section>
- <a href="#" class="image"><img src="images/pic01.jpg" alt="" data-position="center center" /></a>
- <div class="content">
- <div class="inner">
- <h2>Sed ipsum dolor</h2>
- <p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus.</p>
- <ul class="actions">
- <li><a href="#" class="button">Learn more</a></li>
- </ul>
- </div>
- </div>
- </section>
- <section>
- <a href="#" class="image"><img src="images/pic02.jpg" alt="" data-position="top center" /></a>
- <div class="content">
- <div class="inner">
- <h2>Feugiat consequat</h2>
- <p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus.</p>
- <ul class="actions">
- <li><a href="#" class="button">Learn more</a></li>
- </ul>
- </div>
- </div>
- </section>
- <section>
- <a href="#" class="image"><img src="images/pic03.jpg" alt="" data-position="25% 25%" /></a>
- <div class="content">
- <div class="inner">
- <h2>Ultricies aliquam</h2>
- <p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus.</p>
- <ul class="actions">
- <li><a href="#" class="button">Learn more</a></li>
- </ul>
- </div>
- </div>
- </section>
+    <iframe id="detailsFrame">  </iframe>
  </section>
 
 <!-- Choose Port -->
@@ -121,7 +67,7 @@
         <select name="ports" class="select" id="portsSelect" size="10" width="20"></select>
         <ul class="actions">
                 <li><input type='button' value="Refresh" onclick="refreshSerialPorts();" /></li>
-                <li><input type='button' value="Install" onclick="downloadFW();" /></li>
+                <li><input type='button' value="Install" onclick="uploadFW();" /></li>
         </ul>
         </p>
         </div>

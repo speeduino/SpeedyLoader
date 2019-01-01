@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const {download} = require('electron-dl')
 const exec = require('child_process').exec;
+const {spawn} = require('child_process');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -51,6 +52,50 @@ ipcMain.on('download', (e, args) => {
 	download(BrowserWindow.getFocusedWindow(), args.url)
 		.then(dl => console.log(dl.getSavePath()))
 		.catch(console.error);
+});
+
+ipcMain.on('uploadFW', (e, args) => {
+  var platform;
+
+  if(platform.os == "win32") { platform = "avrdude-win32-x86"; }
+  else if(platform.os == "darwin") { platform = "avrdude-darwin-x86"; }
+  else if(platform.os == "linux") { platform = "avrdude-darwin-x86"; }
+
+  var executableName = "./bin/" + platform + "/avrdude";
+  var configName = executableName + ".conf";
+  var hexFile = 'flash:w:' + args.firmwareFile + ':i';
+
+  var execArgs = ['-v', '-patmega2560', '-C', configName, '-cwiring', '-b 115200', '-P', args.port, '-D', '-U', hexFile];
+
+  /*
+	exec("./bin/avrdude-darwin-x86/avrdude -v -p atmega2560 -C ./bin/avrdude-darwin-x86/avrdude.conf -c wiring -b 115200 -P /dev/cu.usbmodem14201 -D -U flash:w:/Users/josh/Downloads/201810.hex:i", (err, stdout, stderr) => {
+    if (err) {
+      console.error(`exec error: ${err}`);
+      return;
+    }
+    console.log(`Upload Output: ${stdout}`);
+  });
+  */
+
+  const child = spawn(executableName, execArgs);
+
+  child.stdout.on('data', (data) => {
+    console.log(`child stdout:\n${data}`);
+  });
+
+  child.stderr.on('data', (data) => {
+    console.log(`avrdude stderr: ${data}`);
+  });
+
+  child.on('error', (err) => {
+    console.log('Failed to start subprocess.');
+  });
+
+  child.on('close', (code) => {
+    if (code !== 0) {
+      console.log(`grep process exited with code ${code}`);
+    }
+  });
 });
 
 // In this file you can include the rest of your app's specific main process
