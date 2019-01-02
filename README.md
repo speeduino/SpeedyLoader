@@ -13,6 +13,8 @@ Currently in early development. Binaries will be made available when ready
 ```
 $ git clone https://github.com/noisymime/SpeedyLoader.git
 $ cd SpeedyLoader
+$
+$ npm install electron-rebuild -g
 $ npm install
 $ npm start
 ```
