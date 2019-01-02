@@ -39,7 +39,10 @@ function refreshSerialPorts()
 function refreshDetails()
 {
     var selectElement = document.getElementById('versionsSelect');
-    var url = "https://api.github.com/repos/noisymime/speeduino/releases/tags/" + selectElement.options[selectElement.selectedIndex].value;
+    var version = selectElement.options[selectElement.selectedIndex].value;
+    var url = "https://api.github.com/repos/noisymime/speeduino/releases/tags/" + version;
+
+    document.getElementById('detailsHeading').innerHTML = version;
     
     
     var request = require('request');
@@ -64,6 +67,11 @@ function refreshDetails()
             textField.innerHTML = myMarked(result.body);
         }
     });
+
+    //Finally, make the details section visible
+    document.getElementById('details').style.display = "inline";
+    //And jump to it
+    window.location.href = "#details";
 }
 
 function refreshAvailableFirmwares()
@@ -87,11 +95,12 @@ function refreshAvailableFirmwares()
     });
 }
 
-function downloadFW()
+function downloadHex()
 {
+
     var e = document.getElementById('versionsSelect');
     var DLurl = "http://speeduino.com/fw/bin/" + e.options[e.selectedIndex].value + ".hex";
-    console.log(DLurl);
+    console.log("Downloading: " + DLurl);
     
     //Download the Hex file
     ipcRenderer.send("download", {
@@ -99,24 +108,69 @@ function downloadFW()
         properties: {directory: "downloads"}
     });
 
-    //Download the ini file
+}
+
+function downloadIni()
+{
+
+    var e = document.getElementById('versionsSelect');
     var DLurl = "http://speeduino.com/fw/" + e.options[e.selectedIndex].value + ".ini";
+    console.log("Downloading: " + DLurl);
+
+    //Download the ini file
     ipcRenderer.send("download", {
         url: DLurl,
         properties: {directory: "downloads"}
     });
+
 }
 
 function uploadFW()
 {
-    var statusText = document.getElementById('statusText');
-    statusText.innerHTML = "Beginning Download"
+    //Jump to the progress section
+    window.location.href = "#progress";
 
-    //Download the Hex file
-    ipcRenderer.send("uploadFW", {
-        port: "/dev/cu.usbmodem14201",
-        firmwareFile: "/Users/josh/Downloads/201810.hex"
+    var statusText = document.getElementById('statusText');
+    statusText.innerHTML = "Downloading INI file"
+    downloadIni();
+
+
+    ipcRenderer.on("download complete", (event, file) => {
+        console.log("Saved file: " + file); // Full file path
+
+        var extension = file.substr(file.length - 3);
+        if(extension == "ini")
+        {
+            statusText.innerHTML = "Downloading firmware"
+            downloadHex();
+        }
+        else if(extension == "hex")
+        {
+            statusText.innerHTML = "Uploading firmware to board"
+
+            //Retrieve the select serial port
+            var e = document.getElementById('portsSelect');
+            uploadPort = e.options[e.selectedIndex].value;
+            console.log("Using port: " + uploadPort);
+
+            //Begin the upload
+            ipcRenderer.send("uploadFW", {
+                port: uploadPort,
+                firmwareFile: file
+            });
+        }
+        console.log();
     });
+
+    ipcRenderer.on("upload completed", (event, code) => {
+        statusText.innerHTML = "Upload to arduino completed successfully";
+    });
+
+    ipcRenderer.on("upload error", (event, code) => {
+        statusText.innerHTML = "Upload to arduino failed";
+    });
+
+
 }
 
 refreshSerialPorts();

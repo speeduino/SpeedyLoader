@@ -1,6 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const {download} = require('electron-dl')
-const exec = require('child_process').exec;
 const {spawn} = require('child_process');
 
 // Keep a global reference of the window object, if you don't, the window will
@@ -50,8 +49,7 @@ app.on('activate', () => {
 
 ipcMain.on('download', (e, args) => {
 	download(BrowserWindow.getFocusedWindow(), args.url)
-		.then(dl => console.log(dl.getSavePath()))
-		.catch(console.error);
+    .then(dl => e.sender.send( "download complete", dl.getSavePath() ) );
 });
 
 ipcMain.on('uploadFW', (e, args) => {
@@ -94,8 +92,14 @@ ipcMain.on('uploadFW', (e, args) => {
   });
 
   child.on('close', (code) => {
-    if (code !== 0) {
-      console.log(`grep process exited with code ${code}`);
+    if (code !== 0) 
+    {
+      console.log(`avrdude process exited with code ${code}`);
+      e.sender.send( "upload error", code )
+    }
+    else
+    {
+      e.sender.send( "upload completed", code )
     }
   });
 });

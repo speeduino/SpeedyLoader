@@ -3892,3 +3892,15 @@ input, select, textarea {
 			}
 
 		}
+
+/* Custom stuff */
+	/* Define an animation behavior */
+	@keyframes spinner {
+		to { transform: rotate(360deg); }
+	}
+	@keyframes spin { 100% { -webkit-transform: rotate(360deg); transform:rotate(360deg); } }
+	/* This is the class name given by the Font Awesome component when icon contains 'spinner' */
+	.features section .fa-spinner {
+		/* Apply 'spinner' keyframes looping once every second (1s)  */
+		animation: spin 1s linear infinite;
+	}
