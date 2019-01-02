@@ -7,6 +7,7 @@ Currently in early development. Binaries will be made available when ready
 
 ### Pre-Requisites
 * NPM - https://www.npmjs.com/get-npm
+* Python 2.x
 * Git
 
 ### Installation steps
