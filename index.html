@@ -41,10 +41,10 @@
  <center><img src="assets/speeduino logo_white.png" width="235"/></center>
  <!--<h1>Firmware Loader</h1>-->
  <p>Available Firmwares:
- <select name="firmwares" class="select" id="versionsSelect" size="10" width="20" onClick="refreshDetailsLink();" ></select>
+ <select name="firmwares" class="select" id="versionsSelect" size="10" width="20" ></select>
     <ul class="actions">
-        <li><input type='button' value="View Firmware Details" onclick="downloadFW();" /></li>
-        <li><input type='button' value="Download" onclick="downloadFW();" /></li>
+        <li><input type='button' value="View Firmware Notes" onclick="refreshDetails();" /></li>
+        <li><input type='button' value="Choose Port" onclick="downloadFW();" /></li>
     </ul>
  </p>
  <div id="error"></div>
@@ -57,9 +57,8 @@
  <!-- Firmware details -->
  <section id="details" class="wrapper style1-alt spotlights">
 <div class="inner">
-    <h1>Firmware Details</h1>
-    <h2>Work In Progress</h2>
-    <iframe id="detailsFrame">  </iframe>
+    <h1>Firmware Notes</h1>
+    <div id="detailsText"></div>
 </div>
  </section>
 
@@ -83,42 +82,12 @@
  <section id="progress" class="wrapper style3 fade-up">
  <div class="inner">
  <h2>Progress</h2>
- <p>Phasellus convallis elit id ullamcorper pulvinar. Duis aliquam turpis mauris, eu ultricies erat malesuada quis. Aliquam dapibus, lacus eget hendrerit bibendum, urna est aliquam sem, sit amet imperdiet est velit quis lorem.</p>
  <div class="features">
  <section>
- <span class="icon major fa-code"></span>
- <h3>Lorem ipsum amet</h3>
- <p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
+ <span class="icon major fa-spinner"></span>
+ <h3>Current Action:</h3>
+ <p><div id="statusText"></div></p>
  </section>
- <section>
- <span class="icon major fa-lock"></span>
- <h3>Aliquam sed nullam</h3>
- <p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
- </section>
- <section>
- <span class="icon major fa-cog"></span>
- <h3>Sed erat ullam corper</h3>
- <p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
- </section>
- <section>
- <span class="icon major fa-desktop"></span>
- <h3>Veroeros quis lorem</h3>
- <p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
- </section>
- <section>
- <span class="icon major fa-chain"></span>
- <h3>Urna quis bibendum</h3>
- <p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
- </section>
- <section>
- <span class="icon major fa-diamond"></span>
- <h3>Aliquam urna dapibus</h3>
- <p>Phasellus convallis elit id ullam corper amet et pulvinar. Duis aliquam turpis mauris, sed ultricies erat dapibus.</p>
- </section>
- </div>
- <ul class="actions">
- <li><a href="#" class="button">Learn more</a></li>
- </ul>
  </div>
  </section>
 

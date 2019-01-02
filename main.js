@@ -57,18 +57,17 @@ ipcMain.on('download', (e, args) => {
 ipcMain.on('uploadFW', (e, args) => {
   var platform;
 
-  if(args.os == "win32") { platform = "avrdude-windows"; }
-  else if(args.os == "darwin") { platform = "avrdude-darwin-x86"; }
-  else if(args.os == "linux") { platform = "avrdude-linux_i686"; }
+  if(process.platform == "win32") { platform = "avrdude-windows"; }
+  else if(process.platform == "darwin") { platform = "avrdude-darwin-x86"; }
+  else if(process.platform == "linux") { platform = "avrdude-linux_i686"; }
 
   var executableName = "./bin/" + platform + "/avrdude";
   var configName = executableName + ".conf";
-  if(args.os == "win32") { executableName = executableName + '.exe'; } //This must come after the configName line above
+  if(process.platform == "win32") { executableName = executableName + '.exe'; } //This must come after the configName line above
 
   var hexFile = 'flash:w:' + args.firmwareFile + ':i';
 
   var execArgs = ['-v', '-patmega2560', '-C', configName, '-cwiring', '-b 115200', '-P', args.port, '-D', '-U', hexFile];
-  console.log(process.platform);
 
   /*
 	exec("./bin/avrdude-darwin-x86/avrdude -v -p atmega2560 -C ./bin/avrdude-darwin-x86/avrdude.conf -c wiring -b 115200 -P /dev/cu.usbmodem14201 -D -U flash:w:/Users/josh/Downloads/201810.hex:i", (err, stdout, stderr) => {

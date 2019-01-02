@@ -36,13 +36,34 @@ function refreshSerialPorts()
       })
 }
 
-function refreshDetailsLink()
+function refreshDetails()
 {
     var selectElement = document.getElementById('versionsSelect');
-    var url = "https://github.com/noisymime/speeduino/releases/tag/" + selectElement.options[selectElement.selectedIndex].value
+    var url = "https://api.github.com/repos/noisymime/speeduino/releases/tags/" + selectElement.options[selectElement.selectedIndex].value;
     
-    var frameElement = document.getElementById('detailsFrame');
-    frameElement.setAttribute("src", url);
+    
+    var request = require('request');
+    const options = {
+        url: url,
+        headers: {
+          'User-Agent': 'request'
+        }
+      };
+
+    request.get(options, function (error, response, body) {
+        if (!error ) {
+
+            console.log(body);
+            var result = JSON.parse(body);
+            
+            // Continue with your processing here.
+            textField = document.getElementById('detailsText');
+
+            //Need to convert the Markdown that comes from Github to HTML
+            var myMarked = require('marked');
+            textField.innerHTML = myMarked(result.body);
+        }
+    });
 }
 
 function refreshAvailableFirmwares()
@@ -88,7 +109,9 @@ function downloadFW()
 
 function uploadFW()
 {
-    //"avrdude -v -p atmega2560 -C ./bin/avrdude-darwin-x86/avrdude.conf -c wiring -b 115200 -P /dev/cu.usbmodem14201 -D -U flash:w:/Users/josh/Downloads/201810.hex:i"
+    var statusText = document.getElementById('statusText');
+    statusText.innerHTML = "Beginning Download"
+
     //Download the Hex file
     ipcRenderer.send("uploadFW", {
         port: "/dev/cu.usbmodem14201",
