@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const {download} = require('electron-dl')
 const {spawn} = require('child_process');
+const {execFile} = require('child_process');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -59,7 +60,8 @@ ipcMain.on('uploadFW', (e, args) => {
   else if(process.platform == "darwin") { platform = "avrdude-darwin-x86"; }
   else if(process.platform == "linux") { platform = "avrdude-linux_i686"; }
 
-  var executableName = "./bin/" + platform + "/avrdude";
+  var executableName = __dirname + "/bin/" + platform + "/avrdude";
+  executableName = executableName.replace('app.asar',''); //This is important for allowing the binary to be found once the app is packaed into an asar
   var configName = executableName + ".conf";
   if(process.platform == "win32") { executableName = executableName + '.exe'; } //This must come after the configName line above
 
@@ -77,7 +79,9 @@ ipcMain.on('uploadFW', (e, args) => {
   });
   */
 
-  const child = spawn(executableName, execArgs);
+  console.log(executableName);
+  //const child = spawn(executableName, execArgs);
+  const child = execFile(executableName, execArgs);
 
   child.stdout.on('data', (data) => {
     console.log(`child stdout:\n${data}`);
@@ -89,6 +93,7 @@ ipcMain.on('uploadFW', (e, args) => {
 
   child.on('error', (err) => {
     console.log('Failed to start subprocess.');
+    console.log(err);
   });
 
   child.on('close', (code) => {
