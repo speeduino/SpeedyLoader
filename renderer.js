@@ -163,7 +163,7 @@ function uploadFW()
     });
 
     ipcRenderer.on("upload completed", (event, code) => {
-        statusText.innerHTML = "Upload to arduino completed successfully";
+        statusText.innerHTML = "Upload to arduino completed successfully!";
     });
 
     ipcRenderer.on("upload error", (event, code) => {
