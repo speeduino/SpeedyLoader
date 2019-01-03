@@ -4,7 +4,7 @@ const {ipcRenderer} = require("electron")
 function refreshSerialPorts()
 {
     serialport.list((err, ports) => {
-        console.log('ports', ports);
+        console.log('Serial ports found: ', ports);
         if (err) {
           document.getElementById('serialDetectError').textContent = err.message
           return
@@ -19,9 +19,9 @@ function refreshSerialPorts()
         select = document.getElementById('portsSelect');
 
         //Clear the current options
-        for (i = 0; i < select.length; i++) 
+        for (i = 0; i <= select.options.length; i++) 
         {
-            select.options[i] = null;
+            select.remove(0); //Always 0 index (As each time an item is removed, everything shuffles up 1 place)
         }
 
         //Load the current serial values
@@ -30,7 +30,7 @@ function refreshSerialPorts()
             var newOption = document.createElement('option');
             newOption.value = ports[i].comName;
             newOption.innerHTML = ports[i].comName;
-            select.appendChild(newOption);
+            select.add(newOption);
         }
         var button = document.getElementById("btnInstall")
         if(ports.length > 0) 
