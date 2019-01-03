@@ -32,6 +32,13 @@ function refreshSerialPorts()
             newOption.innerHTML = ports[i].comName;
             select.appendChild(newOption);
         }
+        var button = document.getElementById("btnInstall")
+        if(ports.length > 0) 
+        {
+            select.selectedIndex = 0;
+            button.disabled = false;
+        }
+        else { button.disabled = true; }
       
       })
 }
@@ -168,6 +175,9 @@ function uploadFW()
 
     ipcRenderer.on("upload error", (event, code) => {
         statusText.innerHTML = "Upload to arduino failed";
+        //Mke the terminal/error section visible
+        document.getElementById('terminalSection').style.display = "inline";
+        document.getElementById('terminalText').innerHTML = code;
     });
 
 

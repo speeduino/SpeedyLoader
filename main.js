@@ -7,6 +7,8 @@ const {execFile} = require('child_process');
 // be closed automatically when the JavaScript object is garbage collected.
 let win
 
+var avrdudeErr = "";
+
 function createWindow () {
   // Create the browser window.
   win = new BrowserWindow({ width: 800, height: 600, backgroundColor: '#312450' })
@@ -69,16 +71,6 @@ ipcMain.on('uploadFW', (e, args) => {
 
   var execArgs = ['-v', '-patmega2560', '-C', configName, '-cwiring', '-b 115200', '-P', args.port, '-D', '-U', hexFile];
 
-  /*
-	exec("./bin/avrdude-darwin-x86/avrdude -v -p atmega2560 -C ./bin/avrdude-darwin-x86/avrdude.conf -c wiring -b 115200 -P /dev/cu.usbmodem14201 -D -U flash:w:/Users/josh/Downloads/201810.hex:i", (err, stdout, stderr) => {
-    if (err) {
-      console.error(`exec error: ${err}`);
-      return;
-    }
-    console.log(`Upload Output: ${stdout}`);
-  });
-  */
-
   console.log(executableName);
   //const child = spawn(executableName, execArgs);
   const child = execFile(executableName, execArgs);
@@ -89,6 +81,7 @@ ipcMain.on('uploadFW', (e, args) => {
 
   child.stderr.on('data', (data) => {
     console.log(`avrdude stderr: ${data}`);
+    avrdudeErr = avrdudeErr + data;
   });
 
   child.on('error', (err) => {
@@ -100,7 +93,8 @@ ipcMain.on('uploadFW', (e, args) => {
     if (code !== 0) 
     {
       console.log(`avrdude process exited with code ${code}`);
-      e.sender.send( "upload error", code )
+      e.sender.send( "upload error", avrdudeErr )
+      avrdudeErr = "";
     }
     else
     {
