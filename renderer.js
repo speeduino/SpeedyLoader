@@ -137,6 +137,14 @@ function uploadFW()
     //Jump to the progress section
     window.location.href = "#progress";
 
+    //Start the spinner
+    var spinner = document.getElementById('progressSpinner');
+    //Remove any old icons
+    spinner.classList.remove('fa-pause');
+    spinner.classList.remove('fa-check');
+    spinner.classList.remove('fa-times');
+    spinner.classList.add('fa-spinner');
+
     var statusText = document.getElementById('statusText');
     statusText.innerHTML = "Downloading INI file"
     downloadIni();
@@ -171,13 +179,17 @@ function uploadFW()
 
     ipcRenderer.on("upload completed", (event, code) => {
         statusText.innerHTML = "Upload to arduino completed successfully!";
+        spinner.classList.remove('fa-spinner');
+        spinner.classList.add('fa-check');
     });
 
     ipcRenderer.on("upload error", (event, code) => {
         statusText.innerHTML = "Upload to arduino failed";
         //Mke the terminal/error section visible
-        document.getElementById('terminalSection').style.display = "inline";
+        document.getElementById('terminalSection').style.display = "block";
         document.getElementById('terminalText').innerHTML = code;
+        spinner.classList.remove('fa-spinner');
+        spinner.classList.add('fa-times');
     });
 
 
