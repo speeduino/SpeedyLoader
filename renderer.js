@@ -178,11 +178,12 @@ function uploadFW()
     spinner.classList.add('fa-spinner');
 
     var statusText = document.getElementById('statusText');
+    var burnPercentText = document.getElementById('burnPercent');
     statusText.innerHTML = "Downloading INI file"
     downloadIni();
 
 
-    ipcRenderer.on("download complete", (event, file) => {
+    ipcRenderer.on("download complete", (event, file, state) => {
         console.log("Saved file: " + file); // Full file path
 
         var extension = file.substr(file.length - 3);
@@ -211,8 +212,13 @@ function uploadFW()
 
     ipcRenderer.on("upload completed", (event, code) => {
         statusText.innerHTML = "Upload to arduino completed successfully!";
+        burnPercentText.innerHTML = "";
         spinner.classList.remove('fa-spinner');
         spinner.classList.add('fa-check');
+    });
+
+    ipcRenderer.on("upload percent", (event, percent) => {
+        burnPercentText.innerHTML = " (" + percent + "%)";
     });
 
     ipcRenderer.on("upload error", (event, code) => {

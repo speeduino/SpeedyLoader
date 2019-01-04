@@ -52,11 +52,15 @@ app.on('activate', () => {
 
 ipcMain.on('download', (e, args) => {
 	download(BrowserWindow.getFocusedWindow(), args.url)
-    .then(dl => e.sender.send( "download complete", dl.getSavePath() ) );
+    .then(dl => e.sender.send( "download complete", dl.getSavePath(), dl.getState() ) )
+    .catch(console.error);
 });
 
 ipcMain.on('uploadFW', (e, args) => {
   var platform;
+
+  var burnStarted = false;
+  var burnPercent = 0;
 
   if(process.platform == "win32") { platform = "avrdude-windows"; }
   else if(process.platform == "darwin") { platform = "avrdude-darwin-x86"; }
@@ -76,12 +80,28 @@ ipcMain.on('uploadFW', (e, args) => {
   const child = execFile(executableName, execArgs);
 
   child.stdout.on('data', (data) => {
-    console.log(`child stdout:\n${data}`);
+    console.log(`avrdude stdout:\n${data}`);
   });
 
   child.stderr.on('data', (data) => {
     console.log(`avrdude stderr: ${data}`);
     avrdudeErr = avrdudeErr + data;
+
+    //Check if avrdude has started the actual burn yet, and if so, track the '#' characters that it prints. Each '#' represents 1% of the total burn process (50 for write and 50 for read)
+    if (burnStarted == true)
+    {
+      if(data=="#") { burnPercent += 1; }
+      e.sender.send( "upload percent", burnPercent );
+    }
+    else
+    {
+      //This is a hack, but basically watch the output from avrdude for the term 'Writing | ', everything after that is the #s indicating 1% of burn. 
+      if(avrdudeErr.substr(avrdudeErr.length - 10) == "Writing | ")
+      {
+        burnStarted = true;
+      }
+    }
+    
   });
 
   child.on('error', (err) => {
