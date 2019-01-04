@@ -51,7 +51,6 @@ function refreshDetails()
 
     document.getElementById('detailsHeading').innerHTML = version;
     
-    
     var request = require('request');
     const options = {
         url: url,
@@ -83,13 +82,21 @@ function refreshDetails()
 
 function refreshAvailableFirmwares()
 {
+    //Disable the buttons. These are only re-enabled if the retrieve is successful
+    var DetailsButton = document.getElementById("btnDetails");
+    var ChoosePortButton = document.getElementById("btnChoosePort");
+    DetailsButton.disabled = true;
+    ChoosePortButton.disabled = true;
+
     var request = require('request');
-    request.get('http://speeduino.com/fw/versions', function (error, response, body) {
+    request.get('http://speeduino.com/fw/versions', {timeout: 10000}, function (error, response, body) 
+    {
+        select = document.getElementById('versionsSelect');
         if (!error && response.statusCode == 200) {
 
             var lines = body.split('\n');
             // Continue with your processing here.
-            select = document.getElementById('versionsSelect');
+            
             for(var i = 0;i < lines.length;i++)
             {
                 var newOption = document.createElement('option');
@@ -98,8 +105,33 @@ function refreshAvailableFirmwares()
                 select.appendChild(newOption);
             }
             select.selectedIndex = 0;
+
+            //Re-enable the buttons
+            DetailsButton.disabled = false;
+            ChoosePortButton.disabled = false;
         }
-    });
+        else if(error)
+        {
+            console.log("Error retrieving available firmwares");
+            var newOption = document.createElement('option');
+            if(error.code === 'ETIMEDOUT')
+            {
+                newOption.value = "Connection timed out";
+                newOption.innerHTML = "Connection timed out";
+            }
+            else
+            {
+                newOption.value = "Cannot retrieve firmware list";
+                newOption.innerHTML = "Cannot retrieve firmware list. Check internet connection and restart";
+            }
+            select.appendChild(newOption);
+        }
+        else if(response.statusCode == 404)
+        {
+
+        }
+    }
+    );
 }
 
 function downloadHex()
@@ -195,5 +227,8 @@ function uploadFW()
 
 }
 
-refreshSerialPorts();
-refreshAvailableFirmwares();
+window.onload = function () {
+    refreshSerialPorts();
+    refreshAvailableFirmwares();
+};
+

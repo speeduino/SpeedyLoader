@@ -40,10 +40,10 @@
  <center><img src="assets/speeduino logo_white.png" width="235"/></center>
  <!--<h1>Firmware Loader</h1>-->
  <p>Available Firmwares:
- <select name="firmwares" class="select" id="versionsSelect" size="10" width="20" ></select>
+    <select name="firmwares" class="select" id="versionsSelect" size="10" width="20" ></select>
     <ul class="actions">
-        <li><input type='button' value="View Firmware Notes" onclick="refreshDetails();" /></li>
-        <li><input type='button' value="Choose Port" onclick="window.location.href = '#port';" /></li>
+        <li><input type='button' id="btnDetails" value="View Firmware Notes" onclick="refreshDetails();" /></li>
+        <li><input type='button' id="btnChoosePort" value="Choose Port" onclick="window.location.href='#port';" /></li>
     </ul>
  </p>
  <div id="error"></div>
@@ -64,7 +64,7 @@
 </section>
 
 <!-- Choose Port -->
-<section id="port" class="wrapper style2 fullscreen fade-up">
+<section id="port" class="wrapper style2 fullscreen fade-up" style="height: 100vh;">
         <div class="inner">
         <h1>Select Serial Port</h1>
         <p>Available Ports:
@@ -80,7 +80,7 @@
 </section>
 
  <!-- Progress -->
- <section id="progress" class="wrapper style3 fade-up">
+ <section id="progress" class="wrapper style3 fade-up" style="height: 100vh;">
  <div class="inner">
  <h2>Progress</h2>
  <div class="features">
@@ -94,7 +94,7 @@
  <section id="terminalSection" style="display: none;">
     <span class="icon major fa-exclamation-triangle"></span>
     <h3>Terminal Output:</h3>
-    <pre style="color: silver; background: black;  overflow-x: scroll;"><span id="terminalText"></span></pre>
+    <pre style="color: silver; background: black;  overflow-x: scroll; overflow-y: scroll; height:220px"><span id="terminalText"></span></pre>
 </section>
  </div>
  </section>
