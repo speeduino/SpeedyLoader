@@ -8,6 +8,7 @@ const {execFile} = require('child_process');
 let win
 
 var avrdudeErr = "";
+var avrdudeIsRunning = false;
 
 function createWindow () {
   // Create the browser window.
@@ -57,6 +58,9 @@ ipcMain.on('download', (e, args) => {
 });
 
 ipcMain.on('uploadFW', (e, args) => {
+
+  if(avrdudeIsRunning == true) { return; }
+  avrdudeIsRunning = true; //Indicate that an avrdude process has started
   var platform;
 
   var burnStarted = false;
@@ -107,9 +111,11 @@ ipcMain.on('uploadFW', (e, args) => {
   child.on('error', (err) => {
     console.log('Failed to start subprocess.');
     console.log(err);
+    avrdudeIsRunning = false;
   });
 
   child.on('close', (code) => {
+    avrdudeIsRunning = false;
     if (code !== 0) 
     {
       console.log(`avrdude process exited with code ${code}`);
