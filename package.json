@@ -7,15 +7,16 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
     "install": "electron-rebuild -f",
-    "package-mac": "electron-packager . --overwrite --platform=darwin --arch=x64 --icon=assets/icons/mac/icon.icns --prune=true --out=release-builds",
-    "package-win": "electron-packager . SpeedyLoader --overwrite --asar=true --platform=win32 --arch=ia32 --target=nsis --icon=assets/icons/win/icon.ico --prune=true --out=release-builds --version-string.CompanyName=CE --version-string.FileDescription=CE --version-string.ProductName=\"Speeduino Firmware Loader\"",
-    "package-linux": "electron-packager . SpeedyLoader --overwrite --asar=true --platform=linux --arch=x64 --icon=assets/icons/png/1024x1024.png --prune=true --out=release-builds"
+    "package-mac": "electron-builder --mac",
+    "package-win": "electron-builder --win",
+    "package-linux": "electron-builder --linux"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/noisymime/SpeedyLoader"
   },
   "author": "Josh Stewart",
+  "email": "sales@speeduino.com",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/noisymime/SpeedyLoader/issues"
@@ -33,7 +34,7 @@
     "serialport": "^7.1.1"
   },
   "build": {
-    "appId": "Test",
+    "appId": "SpeedyLoader",
     "buildDependenciesFromSource": false,
     "npmRebuild": false,
     "files" :
@@ -64,9 +65,9 @@
       ]
     },
     "linux": {
-      "icon": "build/images/icon.png",
+      "icon": "assets/icons/png/512x512.png",
       "target": [
-        "pacman"
+        "AppImage"
       ]
     },
     "mac": {
