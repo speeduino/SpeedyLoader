@@ -35,7 +35,7 @@
  <div id="wrapper">
 
  <!-- Choose Version -->
- <section id="loader" class="wrapper style1 fullscreen fade-up">
+ <section id="loader" class="wrapper style1 fullscreen fade-up" style="height: 100vh;">
  <div class="inner">
  <center><img src="assets/speeduino logo_white.png" width="235"/></center>
  <!--<h1>Firmware Loader</h1>-->
@@ -57,9 +57,13 @@
     <h1>Firmware Notes</h1>
     
     <div class="features major" >
-        <h2><div id="detailsHeading" ></div></h2>
-        <div id="detailsText" ></div>
+        <h2><div id="detailsHeading" style="padding-left: 0.55em;" ></div></h2>
+        <div id="detailsText" style="padding-left: 0.9em; padding-right: 0.9em; overflow-y: auto; height: 50vh;"></div>
     </div>
+    <ul class="actions">
+        <li><input type='button' id="btnDetails" value="Select Different Version" onclick="window.location.href='#loader';" /></li>
+        <li><input type='button' id="btnChoosePort" value="Choose Port" onclick="window.location.href='#port';" /></li>
+    </ul>
 </div>
 </section>
 
@@ -82,20 +86,25 @@
  <!-- Progress -->
  <section id="progress" class="wrapper style3 fade-up" style="height: 100vh;">
  <div class="inner">
- <h2>Progress</h2>
- <div class="features">
- <section>
-    <span class="icon major fa-pause" id="progressSpinner"></span>
-    <p>
-        <strong>Current Status:</strong>
-        <span id="statusText"></span><span id="burnPercent"></span>
-    </p>
- </section>
- <section id="terminalSection" style="display: none;">
-    <span class="icon major fa-exclamation-triangle"></span>
-    <h3>Terminal Output:</h3>
-    <pre style="color: silver; background: black;  overflow-x: scroll; overflow-y: scroll; height:220px"><span id="terminalText"></span></pre>
-</section>
+    <h2>Progress</h2>
+    <div class="features">
+        <section>
+            <span class="icon major fa-pause" id="progressSpinner"></span>
+            <p>
+                <strong>Current Status:</strong>
+                <span id="statusText"></span><span id="burnPercent"></span>
+            </p>
+        </section>
+        <section id="terminalSection" style="display: none;">
+            <span class="icon major fa-exclamation-triangle"></span>
+            <h3>Terminal Output:</h3>
+            <pre style="color: silver; background: black;  overflow-x: scroll; overflow-y: scroll; height:220px"><span id="terminalText"></span></pre>
+        </section>
+    </div>
+    <ul class="actions">
+        <li><input type='button' value="Burn again" id="btnInstall" onclick="uploadFW();" /></li>    
+        <li><input type='button' value="Exit" id="btnExit" onclick="refreshSerialPorts();" /></li>   
+    </ul>
  </div>
  </section>
 

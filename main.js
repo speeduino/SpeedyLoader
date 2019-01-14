@@ -13,7 +13,7 @@ var avrdudeIsRunning = false;
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 600, backgroundColor: '#312450' })
+  win = new BrowserWindow({ frame: false, width: 800, height: 600, backgroundColor: '#312450' })
 
   // and load the index.html of the app.
   win.loadFile('index.html')

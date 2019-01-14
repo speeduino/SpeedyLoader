@@ -22,7 +22,8 @@ section, summary, time, mark, audio, video {
 	border: 0;
 	font-size: 100%;
 	font: inherit;
-	vertical-align: baseline;}
+	vertical-align: baseline;
+	overflow-y: hidden;}
 
 article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
@@ -295,7 +296,7 @@ input, select, textarea {
 		-webkit-overflow-scrolling: touch;
 		font-family: "Courier New", monospace;
 		font-size: 0.9em;
-		margin: 0 0 2em 0;
+		margin: 0 0 1em 0;
 	}
 
 		pre code {
@@ -1990,11 +1991,11 @@ input, select, textarea {
 		border-radius: 0.25em;
 		border: solid 1px rgba(255, 255, 255, 0.15);
 		background: rgba(255, 255, 255, 0.05);
-		margin: 0 0 2em 0;
+		margin: 0 0 1em 0;
 	}
 
 		.features section {
-			padding: 3.5em 3em 1em 7em ;
+			padding: 1.0em 3em 1em 7em ;
 			width: 50%;
 			border-top: solid 1px rgba(255, 255, 255, 0.15);
 			position: relative;
@@ -2023,7 +2024,7 @@ input, select, textarea {
 				transform: scale(1);
 				position: absolute;
 				left: 3em;
-				top: 3em;
+				top: 1.0em;
 				opacity: 1;
 			}
 
@@ -2196,12 +2197,12 @@ input, select, textarea {
 		@media screen and (max-width: 736px) {
 
 			.features section {
-				padding: 2.5em 1.5em 0.1em 5.5em ;
+				padding: 1.0em 1.5em 0.1em 5.5em ;
 			}
 
 				.features section .icon {
 					left: 1.5em;
-					top: 2em;
+					top: 1em;
 				}
 
 		}
@@ -2209,7 +2210,7 @@ input, select, textarea {
 		@media screen and (max-width: 480px) {
 
 			.features section {
-				padding: 2em 1.5em 0.1em 1.5em ;
+				padding: 1.0em 1.5em 0.1em 1.5em ;
 			}
 
 				.features section .icon {

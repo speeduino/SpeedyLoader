@@ -177,6 +177,9 @@ function uploadFW()
     spinner.classList.remove('fa-times');
     spinner.classList.add('fa-spinner');
 
+    //Hide the terminal section incase it was there from a previous burn attempt
+    document.getElementById('terminalSection').style.display = "none";
+
     var statusText = document.getElementById('statusText');
     var burnPercentText = document.getElementById('burnPercent');
     statusText.innerHTML = "Downloading INI file"
@@ -194,7 +197,7 @@ function uploadFW()
         }
         else if(extension == "hex")
         {
-            statusText.innerHTML = "Uploading firmware to board"
+            statusText.innerHTML = "Beginning upload..."
 
             //Retrieve the select serial port
             var e = document.getElementById('portsSelect');
@@ -218,11 +221,12 @@ function uploadFW()
     });
 
     ipcRenderer.on("upload percent", (event, percent) => {
+        statusText.innerHTML = "Uploading firmware to board"
         burnPercentText.innerHTML = " (" + percent + "%)";
     });
 
     ipcRenderer.on("upload error", (event, code) => {
-        statusText.innerHTML = "Upload to arduino failed";
+        statusText.innerHTML = "Upload to Speeduino failed";
         //Mke the terminal/error section visible
         document.getElementById('terminalSection').style.display = "block";
         document.getElementById('terminalText').innerHTML = code;
