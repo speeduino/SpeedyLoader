@@ -1,6 +1,6 @@
 {
   "name": "SpeedyLoader",
-  "version": "0.9",
+  "version": "0.9.0",
   "description": "Speeduino universal firmware loader",
   "main": "main.js",
   "scripts": {
