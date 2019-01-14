@@ -2,6 +2,7 @@ const { app, BrowserWindow, ipcMain } = require('electron')
 const {download} = require('electron-dl')
 const {spawn} = require('child_process');
 const {execFile} = require('child_process');
+const fs = require('fs');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -52,9 +53,25 @@ app.on('activate', () => {
 })
 
 ipcMain.on('download', (e, args) => {
-	download(BrowserWindow.getFocusedWindow(), args.url)
-    .then(dl => e.sender.send( "download complete", dl.getSavePath(), dl.getState() ) )
-    .catch(console.error);
+  filename = args.url.substring(args.url.lastIndexOf('/')+1);
+  dlDir = app.getPath('downloads');
+  fullFile = dlDir + "/" + filename;
+
+  //console.log("Filename: " + fullFile );
+
+  fs.exists(fullFile, (exists) => {
+    if (exists) {
+      console.log("File " + fullFile + " already exists in Downloads directory. Skipping download");
+      e.sender.send( "download complete", fullFile, "exists" );
+    } 
+    else {
+      download(BrowserWindow.getFocusedWindow(), args.url)
+        .then(dl => e.sender.send( "download complete", dl.getSavePath(), dl.getState() ) )
+        .catch(console.error);
+    }
+  });
+
+	
 });
 
 ipcMain.on('uploadFW', (e, args) => {
