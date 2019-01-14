@@ -1,5 +1,6 @@
 const serialport = require('serialport')
 const {ipcRenderer} = require("electron")
+const {remote} = require('electron')
 
 function refreshSerialPorts()
 {
@@ -235,6 +236,12 @@ function uploadFW()
     });
 
 
+}
+
+function quit()
+{
+    let w = remote.getCurrentWindow();
+    w.close();
 }
 
 window.onload = function () {
