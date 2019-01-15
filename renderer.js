@@ -172,6 +172,9 @@ function uploadFW()
 
     //Start the spinner
     var spinner = document.getElementById('progressSpinner');
+    //Disable the Re-burn/re-install button
+    var reinstallButton = document.getElementById("btnReinstall")
+    reinstallButton.disabled = true;
     //Remove any old icons
     spinner.classList.remove('fa-pause');
     spinner.classList.remove('fa-check');
@@ -217,8 +220,13 @@ function uploadFW()
     ipcRenderer.on("upload completed", (event, code) => {
         statusText.innerHTML = "Upload to arduino completed successfully!";
         burnPercentText.innerHTML = "";
+
+        //Turn the spinner off
         spinner.classList.remove('fa-spinner');
         spinner.classList.add('fa-check');
+
+        //Re-enable the re-burn button
+        reinstallButton.disabled = true;
     });
 
     ipcRenderer.on("upload percent", (event, percent) => {
@@ -233,6 +241,8 @@ function uploadFW()
         document.getElementById('terminalText').innerHTML = code;
         spinner.classList.remove('fa-spinner');
         spinner.classList.add('fa-times');
+
+        reinstallButton.disabled = true;
     });
 
 
