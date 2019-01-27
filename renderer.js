@@ -272,5 +272,8 @@ function quit()
 window.onload = function () {
     refreshSerialPorts();
     refreshAvailableFirmwares();
+
+    //Adds the current version number to the Titlebar
+    document.getElementById('title').innerHTML = "Speeduino Universal Firmware Loader (v" + remote.app.getVersion() + ")"
 };
 
