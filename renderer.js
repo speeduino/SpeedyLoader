@@ -1,6 +1,7 @@
 const serialport = require('serialport')
 const {ipcRenderer} = require("electron")
 const {remote} = require('electron')
+const { shell } = require('electron')
 
 function refreshSerialPorts()
 {
@@ -183,6 +184,8 @@ function uploadFW()
 
     //Hide the terminal section incase it was there from a previous burn attempt
     document.getElementById('terminalSection').style.display = "none";
+    //Same for the ini location link
+    document.getElementById('iniFileText').style.display = "none";
 
     var statusText = document.getElementById('statusText');
     var burnPercentText = document.getElementById('burnPercent');
@@ -197,6 +200,8 @@ function uploadFW()
         if(extension == "ini")
         {
             statusText.innerHTML = "Downloading firmware"
+            document.getElementById('iniFileText').style.display = "block"
+            document.getElementById('iniFileLocation').innerHTML = file
             downloadHex();
         }
         else if(extension == "hex")
@@ -246,6 +251,16 @@ function uploadFW()
     });
 
 
+}
+
+//Opens a native file manager window at the location of the downloaded ini file
+function openFileMgr()
+{
+    var location = document.getElementById('iniFileLocation').innerHTML
+    if (location != "")
+    {
+        shell.showItemInFolder(location);
+    } 
 }
 
 function quit()

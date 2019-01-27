@@ -92,13 +92,14 @@
             <span class="icon major fa-pause" id="progressSpinner"></span>
             <p>
                 <strong>Current Status:</strong>
-                <span id="statusText"></span><span id="burnPercent"></span>
+                <span id="statusText"></span><span id="burnPercent"></span><br />
+                <span id="iniFileText" style="display: none;">TunerStudio definition file: <a id="iniFileLink" onClick="openFileMgr();" ><span id="iniFileLocation"></span></a></span></span>
             </p>
         </section>
         <section id="terminalSection" style="display: none;">
             <span class="icon major fa-exclamation-triangle"></span>
             <h3>Terminal Output:</h3>
-            <pre style="color: silver; background: black;  overflow-x: scroll; overflow-y: scroll; height:220px"><span id="terminalText"></span></pre>
+            <pre style="color: silver; background: black;  overflow-x: scroll; overflow-y: scroll; height:210px"><span id="terminalText"></span></pre>
         </section>
     </div>
     <ul class="actions">
