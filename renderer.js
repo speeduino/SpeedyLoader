@@ -231,7 +231,7 @@ function uploadFW()
         spinner.classList.add('fa-check');
 
         //Re-enable the re-burn button
-        reinstallButton.disabled = true;
+        reinstallButton.disabled = false;
     });
 
     ipcRenderer.on("upload percent", (event, percent) => {
@@ -247,7 +247,7 @@ function uploadFW()
         spinner.classList.remove('fa-spinner');
         spinner.classList.add('fa-times');
 
-        reinstallButton.disabled = true;
+        reinstallButton.disabled = false;
     });
 
 
