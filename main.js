@@ -58,6 +58,17 @@ ipcMain.on('download', (e, args) => {
   dlDir = app.getPath('downloads');
   fullFile = dlDir + "/" + filename;
 
+  //Special case for handling the build that is from master. This is ALWAYS downloaded as there's no way of telling when it was last updated. 
+  if(filename == "master.hex" || filename == "master.ini") 
+  {
+    if(fs.existsSync(fullFile))
+    {
+      fs.unlinkSync(fullFile)
+      console.log('Master version selected, removing local file forcing re-download: ' + filename);
+    }
+
+  }
+
   //console.log("Filename: " + fullFile );
 
   fs.exists(fullFile, (exists) => {
