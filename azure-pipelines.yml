@@ -17,5 +17,8 @@ steps:
 
 - script: |
     npm install
+    npm install electron-builder -g
     npm run build
+    electron-builder --win
+
   displayName: 'npm install and build'
