@@ -16,7 +16,7 @@ jobs:
     inputs:
       versionSpec: '8.x'
     displayName: 'Install Node.js'
-  - script: |
+  - bash: |
       npm set npm_config_arch ia32
       npm install --arch=ia32 electron-prebuilt -g
       npm install --arch=ia32 electron-builder -g
@@ -36,7 +36,7 @@ jobs:
     inputs:
       versionSpec: '8.x'
     displayName: 'Install Node.js'
-  - script: |
+  - bash: |
       npm install
       npm install electron-builder -g
       npm run build
