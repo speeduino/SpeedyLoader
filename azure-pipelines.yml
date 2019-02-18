@@ -7,7 +7,7 @@ trigger:
 - azure-pipelines
 
 jobs:
-- job: 32-bit
+- job: 32_bit
   pool:
     vmImage: 'vs2017-win2016'
 
@@ -26,7 +26,7 @@ jobs:
       electron-builder --win --arch=ia32
     displayName: 'npm install and build 32-bit'
   
-- job: 64-bit
+- job: 64_bit
   pool:
     vmImage: 'vs2017-win2016'
 
