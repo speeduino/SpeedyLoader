@@ -28,10 +28,17 @@ jobs:
       echo Electron builder complete
       echo $(Build.ArtifactStagingDirectory)
     displayName: 'npm install and build 32-bit'
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)'
+      contents: '**\dist\*.exe'
+      targetFolder: $(Build.ArtifactStagingDirectory)
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)\dist\*.exe
-      artifactName: drop
+      pathtoPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: win32
+
   - task: cURLUploader@2
     inputs:
       files: dist\*.exe
