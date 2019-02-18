@@ -21,6 +21,11 @@ jobs:
       npm set npm_config_target_arch ia32 -g
       npm set npm_config_runtime electron -g
       npm set npm_config_build_from_source true -g
+      export npm_config_arch=ia32
+      export npm_config_target_arch=ia32
+      export npm_config_runtime=electron
+      export npm_config_build_from_source=true
+      export npm_config_disturl=https://atom.io/download/electron
       npm install --arch=ia32 electron-prebuilt -g
       npm install --arch=ia32 electron-builder -g
       npm install --arch=ia32 electron-rebuild -g
