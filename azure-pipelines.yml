@@ -27,6 +27,8 @@ jobs:
       export npm_config_runtime=electron
       export npm_config_build_from_source=true
       export npm_config_disturl=https://atom.io/download/electron
+      export win_delay_load_hook=true
+      HOME=~/.electron-gyp npm install
       npm install --arch=ia32 electron-prebuilt -g
       npm install --arch=ia32 electron-builder -g
       npm install --arch=ia32 electron-rebuild -g
