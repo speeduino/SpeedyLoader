@@ -18,6 +18,7 @@ jobs:
     displayName: 'Install Node.js'
   - bash: |
       npm set npm_config_arch ia32
+      npm install --arch=ia32 windows-build-tools -g
       npm install --arch=ia32 electron-prebuilt -g
       npm install --arch=ia32 electron-builder -g
       npm install --arch=ia32 electron-rebuild -g
@@ -31,8 +32,8 @@ jobs:
 
   - task: CopyFiles@2
     inputs:
-      sourceFolder: '$(Build.SourcesDirectory)'
-      contents: '**\dist\*.exe'
+      sourceFolder: '$(Build.SourcesDirectory)\dist'
+      contents: '*.exe'
       targetFolder: $(Build.ArtifactStagingDirectory)
   - task: PublishBuildArtifacts@1
     inputs:
