@@ -23,7 +23,8 @@ jobs:
       npm install --arch=ia32 electron-rebuild -g
       npm install --arch=ia32
       electron-rebuild -f --arch=ia32
-      electron-builder --win --arch=ia32
+      electron-builder --win --ia32
+      ls ./dist
       echo Electron builder complete
     displayName: 'npm install and build 32-bit'
   
@@ -37,8 +38,10 @@ jobs:
       versionSpec: '8.x'
     displayName: 'Install Node.js'
   - bash: |
+      npm cache clean --force
+      rm -rf node_modules/
+      npm set npm_config_arch x64
       npm install
       npm install electron-builder -g
-      npm run build
-      electron-builder --win
+      electron-builder --win --x64
     displayName: 'npm install and build 64-bit'
