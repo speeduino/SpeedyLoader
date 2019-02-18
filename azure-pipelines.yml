@@ -24,6 +24,7 @@ jobs:
       npm install --arch=ia32
       electron-rebuild -f --arch=ia32
       electron-builder --win --arch=ia32
+      echo Electron builder complete
     displayName: 'npm install and build 32-bit'
   
 - job: job_64_bit
