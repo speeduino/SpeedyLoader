@@ -30,7 +30,7 @@ jobs:
   - task: cURLUploader@2
     inputs:
       files: dist\*.exe
-      URL: SFTP://home.noisymime.org
+      URL: scp://home.noisymime.org
       authType: userAndPass
       username: josh
       password: $(sftp_pwd)
