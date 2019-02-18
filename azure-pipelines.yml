@@ -21,7 +21,7 @@ jobs:
       npm set npm_config_target_arch ia32 -g
       npm set npm_config_runtime electron -g
       npm set npm_config_build_from_source true -g
-      export npm_config_target=1.4.13
+      export npm_config_target=1.2.3
       export npm_config_arch=ia32
       export npm_config_target_arch=ia32
       export npm_config_runtime=electron
