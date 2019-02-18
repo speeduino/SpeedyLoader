@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
-    "install": "electron-rebuild -f",
+    "install": "electron-rebuild -f --arch=ia32",
     "package-mac": "electron-builder --mac",
     "package-win": "electron-builder --win",
     "package-linux": "electron-builder --linux"
