@@ -25,6 +25,7 @@ jobs:
       npm install --arch=ia32 electron-builder -g
       npm install --arch=ia32 electron-rebuild -g
       npm install --arch=ia32
+      rm -rf node_modules/prebuild-install
       electron-rebuild -f --arch=ia32
       electron-builder --win --ia32
       ls ./dist
