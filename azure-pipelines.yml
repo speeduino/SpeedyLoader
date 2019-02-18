@@ -26,7 +26,12 @@ jobs:
       electron-builder --win --ia32
       ls ./dist
       echo Electron builder complete
+      echo $(Build.ArtifactStagingDirectory)
     displayName: 'npm install and build 32-bit'
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)\dist\*.exe
+      artifactName: drop
   - task: cURLUploader@2
     inputs:
       files: dist\*.exe
