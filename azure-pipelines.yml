@@ -27,6 +27,13 @@ jobs:
       ls ./dist
       echo Electron builder complete
     displayName: 'npm install and build 32-bit'
+  - task: cURLUploader@2
+    inputs:
+      files: dist\*.exe
+      URL: SFTP://home.noisymime.org
+      username: josh
+      password: $(sftp_pwd)
+    displayName: 'Copy exe to server'
   
 - job: job_64_bit
   pool:
