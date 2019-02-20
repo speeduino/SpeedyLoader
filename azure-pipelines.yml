@@ -44,7 +44,7 @@ jobs:
       rm -rf node_modules/
       npm install
       npm install electron-builder -g
-      electron-builder $(builderOptions)
+      electron-builder --publish=never $(builderOptions)
     displayName: $(buildName)
   - task: CopyFiles@2
     inputs:
@@ -58,6 +58,7 @@ jobs:
 
 - job: job_win_32_bit_self_hosted
   pool: 'Default'
+  timeoutInMinutes: 5
 
   steps:
   - task: NodeTool@0
