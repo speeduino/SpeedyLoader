@@ -7,9 +7,10 @@ trigger:
 - azure-pipelines
 
 jobs:
-- job: job_32_bit
+
+- job: job_win_32_bit_self_hosted
   pool:
-    vmImage: 'vs2017-win2016'
+    name: 'Default'
 
   steps:
   - task: NodeTool@0
@@ -17,30 +18,11 @@ jobs:
       versionSpec: '8.x'
     displayName: 'Install Node.js'
   - bash: |
-      npm set npm_config_arch ia32 -g
-      npm set npm_config_target_arch ia32 -g
-      npm set npm_config_runtime electron -g
-      npm set npm_config_build_from_source true -g
-      export npm_config_target=1.4.13
-      export npm_config_arch=ia32
-      export npm_config_target_arch=ia32
-      export npm_config_runtime=electron
-      export npm_config_build_from_source=true
-      export npm_config_disturl=https://atom.io/download/electron
-      npm install --arch=ia32 electron-prebuilt -g
-      npm install --arch=ia32 electron-builder -g
-      npm install --arch=ia32 electron-rebuild -g
-      npm install --arch=ia32 node-pre-gyp
-      npm install --arch=ia32
-      rm -rf node_modules/prebuild-install
-      node-pre-gyp clean install --arch=ia32 --runtime=electron --target-1.4.13 --fallback-to-build
-      electron-rebuild -f --arch=ia32
+      npm install
+      npm install electron-builder -g
       electron-builder --win --ia32
-      ls ./dist
-      echo Electron builder complete
-      echo $(Build.ArtifactStagingDirectory)
-    displayName: 'npm install and build 32-bit'
-
+    displayName: 'Windows 32-bit'
+  
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)\dist'
@@ -51,18 +33,8 @@ jobs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
       artifactName: win32
 
-  - task: cURLUploader@2
-    inputs:
-      files: dist\*.exe
-      URL: scp://home.noisymime.org
-      authType: userAndPass
-      username: josh
-      password: $(sftp_pwd)
-    displayName: 'Copy exe to server'
-  
-- job: job_64_bit
-  dependsOn: job_32_bit
-  condition: succeeded()
+
+- job: job_win_64_bit
   pool:
     vmImage: 'vs2017-win2016'
 
@@ -78,4 +50,63 @@ jobs:
       npm install
       npm install electron-builder -g
       electron-builder --win --x64
-    displayName: 'npm install and build 64-bit'
+    displayName: 'Windows 64-bit'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)\dist'
+      contents: '*.exe'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: win64
+
+- job: job_mac_64_bit
+  pool:
+    vmImage: 'macOS-10.13'
+
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+  - bash: |
+      npm install
+      npm install electron-builder -g
+      electron-builder --mac
+    displayName: 'Mac build'
+  
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)/dist'
+      contents: '*.dmg'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: mac
+
+- job: job_linux_appImage
+  pool:
+    vmImage: 'ubuntu-16.04'
+
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+  - bash: |
+      npm install
+      npm install electron-builder -g
+      electron-builder --linux
+    displayName: 'Linux AppImage'
+
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)/dist'
+      contents: '*.appimage'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: 'linux'
