@@ -62,7 +62,7 @@ jobs:
   steps:
   - task: NodeTool@0
     inputs:
-    versionSpec: '8.x'
+      versionSpec: '8.x'
     displayName: 'Install Node.js'
   - bash: |
       npm install
@@ -71,10 +71,10 @@ jobs:
     displayName: 'Windows 32-bit'
   - task: CopyFiles@2
     inputs:
-    sourceFolder: '$(Build.SourcesDirectory)\dist'
-    contents: '*.exe'
-    targetFolder: $(Build.ArtifactStagingDirectory)
+      sourceFolder: '$(Build.SourcesDirectory)\dist'
+      contents: '*.exe'
+      targetFolder: $(Build.ArtifactStagingDirectory)
   - task: PublishBuildArtifacts@1
     inputs:
-    pathtoPublish: $(Build.ArtifactStagingDirectory)
-    artifactName: win32
+      pathtoPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: win32
