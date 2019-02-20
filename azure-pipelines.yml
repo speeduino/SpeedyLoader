@@ -30,8 +30,6 @@ jobs:
         builderOptions: '--win'
         buildName: "Windows 64-bit"
         artefactName: "win-64"
-      windows-32:
-        imageName: 'Default'
 
   pool:
     vmImage: $(imageName)
