@@ -6,11 +6,22 @@ trigger:
 - master
 - azure-pipelines
 
+strategy:
+  matrix:
+    linux:
+      imageName: 'ubuntu-16.04'
+    mac:
+      imageName: 'macos-10.13'
+    windows-64:
+      imageName: 'vs2017-win2016'
+    windows-32:
+      imageName: 'Default'
+
 jobs:
 
 - job: job_win_32_bit_self_hosted
   pool:
-    name: 'Default'
+    name: $(imageName)
 
   steps:
   - task: NodeTool@0
@@ -36,7 +47,7 @@ jobs:
 
 - job: job_win_64_bit
   pool:
-    vmImage: 'vs2017-win2016'
+    vmImage: $(imageName)
 
   steps:
   - task: NodeTool@0
@@ -63,7 +74,7 @@ jobs:
 
 - job: job_mac_64_bit
   pool:
-    vmImage: 'macOS-10.13'
+    vmImage: $(imageName)
 
   steps:
   - task: NodeTool@0
@@ -88,7 +99,7 @@ jobs:
 
 - job: job_linux_appImage
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: $(imageName)
 
   steps:
   - task: NodeTool@0
