@@ -56,3 +56,25 @@ jobs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
       artifactName: $(artefactName)
 
+- job: job_win_32_bit_self_hosted
+  pool: 'Default'
+
+  steps:
+  - task: NodeTool@0
+    inputs:
+    versionSpec: '8.x'
+    displayName: 'Install Node.js'
+  - bash: |
+      npm install
+      npm install electron-builder -g
+      electron-builder --win --ia32
+    displayName: 'Windows 32-bit'
+  - task: CopyFiles@2
+    inputs:
+    sourceFolder: '$(Build.SourcesDirectory)\dist'
+    contents: '*.exe'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: PublishBuildArtifacts@1
+    inputs:
+    pathtoPublish: $(Build.ArtifactStagingDirectory)
+    artifactName: win32
