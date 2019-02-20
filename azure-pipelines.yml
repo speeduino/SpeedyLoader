@@ -6,46 +6,33 @@ trigger:
 - master
 - azure-pipelines
 
-strategy:
-  matrix:
-    linux:
-      imageName: 'ubuntu-16.04'
-    mac:
-      imageName: 'macos-10.13'
-    windows-64:
-      imageName: 'vs2017-win2016'
-    windows-32:
-      imageName: 'Default'
 
 jobs:
 
-- job: job_win_32_bit_self_hosted
-  pool:
-    name: $(imageName)
+- job: generic_build
+  strategy:
+    matrix:
+      linux:
+        imageName: 'ubuntu-16.04'
+        outputExtension: '*.appimage'
+        builderOptions: '--linux'
+        buildName: "Linux AppImage"
+        artefactName: "linux"
+      mac:
+        imageName: 'macos-10.13'
+        outputExtension: '*.dmg'
+        builderOptions: '--mac'
+        buildName: "Mac"
+        artefactName: "mac"
+      windows-64:
+        imageName: 'vs2017-win2016'
+        outputExtension: '*.exe'
+        builderOptions: '--win'
+        buildName: "Windows 64-bit"
+        artefactName: "win-64"
+      windows-32:
+        imageName: 'Default'
 
-  steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '8.x'
-    displayName: 'Install Node.js'
-  - bash: |
-      npm install
-      npm install electron-builder -g
-      electron-builder --win --ia32
-    displayName: 'Windows 32-bit'
-  
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: '$(Build.SourcesDirectory)\dist'
-      contents: '*.exe'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: win32
-
-
-- job: job_win_64_bit
   pool:
     vmImage: $(imageName)
 
@@ -57,67 +44,17 @@ jobs:
   - bash: |
       npm cache clean --force
       rm -rf node_modules/
-      npm set npm_config_arch x64
       npm install
       npm install electron-builder -g
-      electron-builder --win --x64
-    displayName: 'Windows 64-bit'
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: '$(Build.SourcesDirectory)\dist'
-      contents: '*.exe'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: win64
-
-- job: job_mac_64_bit
-  pool:
-    vmImage: $(imageName)
-
-  steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '8.x'
-    displayName: 'Install Node.js'
-  - bash: |
-      npm install
-      npm install electron-builder -g
-      electron-builder --mac
-    displayName: 'Mac build'
-  
+      electron-builder $(builderOptions)
+    displayName: $(buildName)
   - task: CopyFiles@2
     inputs:
       sourceFolder: '$(Build.SourcesDirectory)/dist'
-      contents: '*.dmg'
+      contents: $(outputExtension)
       targetFolder: $(Build.ArtifactStagingDirectory)
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: mac
+      artifactName: $(artefactName)
 
-- job: job_linux_appImage
-  pool:
-    vmImage: $(imageName)
-
-  steps:
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '8.x'
-    displayName: 'Install Node.js'
-  - bash: |
-      npm install
-      npm install electron-builder -g
-      electron-builder --linux
-    displayName: 'Linux AppImage'
-
-  - task: CopyFiles@2
-    inputs:
-      sourceFolder: '$(Build.SourcesDirectory)/dist'
-      contents: '*.appimage'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: 'linux'
