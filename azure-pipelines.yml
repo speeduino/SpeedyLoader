@@ -62,6 +62,7 @@ jobs:
 
   steps:
   - task: NodeTool@0
+    enabled: false
     inputs:
       versionSpec: '8.x'
     displayName: 'Install Node.js'
