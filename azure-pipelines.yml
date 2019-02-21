@@ -17,19 +17,19 @@ jobs:
         outputExtension: '*.AppImage'
         builderOptions: '--linux'
         buildName: "Linux AppImage"
-        artefactName: "linux"
+        artefactName: "Linux AppImage"
       mac:
         imageName: 'macos-10.13'
         outputExtension: '*.dmg'
         builderOptions: '--mac'
         buildName: "Mac"
-        artefactName: "mac"
+        artefactName: "Mac 64-bit"
       windows-64:
         imageName: 'vs2017-win2016'
         outputExtension: '*.exe'
         builderOptions: '--win'
         buildName: "Windows 64-bit"
-        artefactName: "win-64"
+        artefactName: "Windows 64-bit"
 
   pool:
     vmImage: $(imageName)
@@ -79,4 +79,18 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: win32
+      artifactName: "Windows 32-bit"
+
+# Should only run when a tag is created
+- job: do_github_release
+  steps:
+  - task: GithubRelease@0 
+    displayName: 'Create GitHub Release'      
+    inputs:
+      githubConnection: noisymime
+      repositoryName: noisymime/SpeedyLoader
+      action: 'create'
+      target: '$(build.sourceVersion)'
+      assets: $(Build.ArtifactStagingDirectory)/*.zip
+      addChangeLog: true
+      isDraft: true
