@@ -55,6 +55,16 @@ jobs:
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
       artifactName: $(artefactName)
+  - task: GithubRelease@0 
+    displayName: 'Create GitHub Release'      
+    inputs:
+      githubConnection: noisymime
+      repositoryName: noisymime/SpeedyLoader
+      action: 'create'
+      target: '$(build.sourceVersion)'
+      assets: $(Build.ArtifactStagingDirectory)/*.zip
+      addChangeLog: true
+      isDraft: true
 
 - job: job_win_32_bit_self_hosted
   pool: 'Default'
@@ -66,10 +76,10 @@ jobs:
     inputs:
       versionSpec: '8.x'
     displayName: 'Install Node.js'
-  - bash: |
+  - script: |
       npm install
       npm install electron-builder -g
-      electron-builder --win --ia32
+      electron-builder --win
     displayName: 'Windows 32-bit'
   - task: CopyFiles@2
     inputs:
@@ -80,10 +90,6 @@ jobs:
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
       artifactName: "Windows 32-bit"
-
-# Should only run when a tag is created
-- job: do_github_release
-  steps:
   - task: GithubRelease@0 
     displayName: 'Create GitHub Release'      
     inputs:
