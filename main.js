@@ -58,37 +58,6 @@ ipcMain.on('download', (e, args) => {
   dlDir = app.getPath('downloads');
   fullFile = dlDir + "/" + filename;
 
-  useTSDir = false;
-  //Try and find the TunerStudio ecuDef directory
-  if(process.platform == "win32")
-  { 
-    //Windows
-    TunerStudioDir = "C:\Program Files (x86)\EFIAnalytics\TunerStudioMS\config\ecuDef\"; 
-    try {
-      fs.existsSync(TunerStudioDir); //Directory exists
-      fs.accessSync(TunerStudioDir, fs.constants.R_OK | fs.constants.W_OK); //Directory can be written to
-      useTSDir = true;
-    } catch (err) {
-      useTSDir = false;
-    }
-  }
-  else if(process.platform == "darwin")
-  { 
-    //Mac
-    TunerStudioDir = "/Applications/TunerStudio MS.app/Contents/Java/config/ecuDef/"
-    try {
-      fs.existsSync(TunerStudioDir); //Directory exists
-      fs.accessSync(TunerStudioDir, fs.constants.R_OK | fs.constants.W_OK); //Directory can be written to
-      useTSDir = true;
-    } catch (err) {
-      useTSDir = false;
-    }
-  }
-  else if(process.platform == "linux") 
-  { 
-    platform = "avrdude-linux_i686"; 
-  }
-
   //Special case for handling the build that is from master. This is ALWAYS downloaded as there's no way of telling when it was last updated. 
   if(filename == "master.hex" || filename == "master.ini") 
   {
@@ -126,10 +95,23 @@ ipcMain.on('uploadFW', (e, args) => {
   var burnStarted = false;
   var burnPercent = 0;
 
-  if(process.platform == "win32") { platform = "avrdude-windows"; }
-  //else if(process.platform == "darwin") { platform = "avrdude-darwin-x86"; }
-  else if(process.platform == "darwin") { platform = "avrdude-darwin-x86_64"; }
-  else if(process.platform == "linux") { platform = "avrdude-linux_i686"; }
+  //All Windows builds use the 32-bit binary
+  if(process.platform == "win32") 
+  { 
+    platform = "avrdude-windows"; 
+  }
+  //All Mac builds use the 64-bit binary
+  else if(process.platform == "darwin") 
+  { 
+    platform = "avrdude-darwin-x86_64";
+  }
+  else if(process.platform == "linux") 
+  { 
+    if(process.arch == "x32") { platform = "avrdude-linux_i686"; }
+    else if(process.arch == "x64") { platform = "avrdude-linux_x86_64"; }
+    else if(process.arch == "arm") { platform = "avrdude-armhf"; }
+    else if(process.arch == "arm64") { platform = "avrdude-aarch64"; }
+  }
 
   var executableName = __dirname + "/bin/" + platform + "/avrdude";
   executableName = executableName.replace('app.asar',''); //This is important for allowing the binary to be found once the app is packaed into an asar
