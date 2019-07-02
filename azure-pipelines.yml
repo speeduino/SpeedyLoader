@@ -55,16 +55,17 @@ jobs:
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
       artifactName: $(artefactName)
-  - task: GithubRelease@0 
-    displayName: 'Create GitHub Release'      
-    inputs:
-      githubConnection: speeduino
-      repositoryName: speeduino/SpeedyLoader
-      action: 'create'
-      target: '$(build.sourceVersion)'
-      assets: $(Build.ArtifactStagingDirectory)/*.zip
-      addChangeLog: true
-      isDraft: true
+
+  #- task: GithubRelease@0 
+  #  displayName: 'Create GitHub Release'      
+  #  inputs:
+  #    githubConnection: speeduino
+  #    repositoryName: speeduino/SpeedyLoader
+  #    action: 'create'
+  #    target: '$(build.sourceVersion)'
+  #    assets: $(Build.ArtifactStagingDirectory)/*.zip
+  #    addChangeLog: true
+  #    isDraft: true
 
 - job: job_win_32_bit_self_hosted
   pool: 'Default'
@@ -90,13 +91,13 @@ jobs:
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
       artifactName: "Windows 32-bit"
-  - task: GithubRelease@0 
-    displayName: 'Create GitHub Release'      
-    inputs:
-      githubConnection: speeduino
-      repositoryName: speeduino/SpeedyLoader
-      action: 'create'
-      target: '$(build.sourceVersion)'
-      assets: $(Build.ArtifactStagingDirectory)/*.zip
-      addChangeLog: true
-      isDraft: true
+  #- task: GithubRelease@0 
+  #  displayName: 'Create GitHub Release'      
+  #  inputs:
+  #    githubConnection: speeduino
+  #    repositoryName: speeduino/SpeedyLoader
+  #    action: 'create'
+  #    target: '$(build.sourceVersion)'
+  #    assets: $(Build.ArtifactStagingDirectory)/*.zip
+  #    addChangeLog: true
+  #    isDraft: true
