@@ -269,11 +269,46 @@ function quit()
     w.close();
 }
 
-window.onload = function () {
-    refreshSerialPorts();
-    refreshAvailableFirmwares();
+function checkForUpdates()
+{
+    var url = "https://api.github.com/repos/speeduino/SpeedyLoader/releases/latest";
 
+    //document.getElementById('detailsHeading').innerHTML = version;
+    
+    var request = require('request');
+    const options = {
+        url: url,
+        headers: {
+          'User-Agent': 'request'
+        }
+      };
+
+    request.get(options, function (error, response, body) {
+        if (!error ) 
+        {
+            var result = JSON.parse(body);
+            latest_version = result.tag_name.substring(1);
+            console.log("Latest version: " + latest_version);
+
+            var semver = require('semver');
+            if(semver.gt(latest_version, remote.app.getVersion()))
+            {
+                //New version has been found
+                document.getElementById('update_url').setAttribute("href", result.html_url);
+                document.getElementById('update_text').style.display = "block";
+            }
+        }
+    });
+
+}
+
+window.onload = function () {
     //Adds the current version number to the Titlebar
     document.getElementById('title').innerHTML = "Speeduino Universal Firmware Loader (v" + remote.app.getVersion() + ")"
+    
+    refreshAvailableFirmwares();
+    refreshSerialPorts();
+    checkForUpdates();
+    
 };
 
