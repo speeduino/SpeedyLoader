@@ -58,8 +58,8 @@ jobs:
   - task: GithubRelease@0 
     displayName: 'Create GitHub Release'      
     inputs:
-      githubConnection: noisymime
-      repositoryName: noisymime/SpeedyLoader
+      githubConnection: speeduino
+      repositoryName: speeduino/SpeedyLoader
       action: 'create'
       target: '$(build.sourceVersion)'
       assets: $(Build.ArtifactStagingDirectory)/*.zip
@@ -93,8 +93,8 @@ jobs:
   - task: GithubRelease@0 
     displayName: 'Create GitHub Release'      
     inputs:
-      githubConnection: noisymime
-      repositoryName: noisymime/SpeedyLoader
+      githubConnection: speeduino
+      repositoryName: speeduino/SpeedyLoader
       action: 'create'
       target: '$(build.sourceVersion)'
       assets: $(Build.ArtifactStagingDirectory)/*.zip
