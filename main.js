@@ -91,6 +91,18 @@ ipcMain.on('download', (e, args) => {
 	
 });
 
+ipcMain.on('installWinDrivers', (e, args) => {
+  var infName = __dirname + "/bin/drivers-win/arduino.inf";
+  infName = infName.replace('app.asar',''); 
+  console.log("INF File " + infName);
+   //syssetup,SetupInfObjectInstallAction DefaultInstall 128 .\<file>.inf
+
+  var execArgs = ['syssetup,SetupInfObjectInstallAction', 'DefaultInstall 128', infName];
+
+  const child = execFile("rundll32", execArgs);
+
+});
+
 ipcMain.on('uploadFW', (e, args) => {
 
   if(avrdudeIsRunning == true) { return; }

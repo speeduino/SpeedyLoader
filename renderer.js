@@ -166,6 +166,14 @@ function downloadIni()
 
 }
 
+//Installing the Windows drivers
+function installDrivers()
+{
+    ipcRenderer.send("installWinDrivers", {
+    });
+
+}
+
 function downloadTune()
 {
 
