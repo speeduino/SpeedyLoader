@@ -1,0 +1,103 @@
+# Node.js
+# Build a general Node.js project with npm.
+# Add steps that analyze code, save build artifacts, deploy, and more:
+# https://docs.microsoft.com/azure/devops/pipelines/languages/javascript
+trigger:
+- master
+- azure-pipelines
+
+
+jobs:
+
+- job: generic_build
+  strategy:
+    matrix:
+      linux:
+        imageName: 'ubuntu-16.04'
+        outputExtension: '*.AppImage'
+        builderOptions: '--linux'
+        buildName: "Linux AppImage"
+        artefactName: "Linux AppImage"
+      mac:
+        imageName: 'macos-10.13'
+        outputExtension: '*.dmg'
+        builderOptions: '--mac'
+        buildName: "Mac"
+        artefactName: "Mac 64-bit"
+      windows-64:
+        imageName: 'vs2017-win2016'
+        outputExtension: '*.exe'
+        builderOptions: '--win'
+        buildName: "Windows 64-bit"
+        artefactName: "Windows 64-bit"
+
+  pool:
+    vmImage: $(imageName)
+
+  steps:
+  - task: NodeTool@0
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+  - bash: |
+      npm cache clean --force
+      rm -rf node_modules/
+      npm install
+      npm install electron-builder -g
+      electron-builder --publish=never $(builderOptions)
+    displayName: $(buildName)
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)/dist'
+      contents: $(outputExtension)
+      targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: $(artefactName)
+
+  #- task: GithubRelease@0 
+  #  displayName: 'Create GitHub Release'      
+  #  inputs:
+  #    githubConnection: speeduino
+  #    repositoryName: speeduino/SpeedyLoader
+  #    action: 'create'
+  #    target: '$(build.sourceVersion)'
+  #    assets: $(Build.ArtifactStagingDirectory)/*.zip
+  #    addChangeLog: true
+  #    isDraft: true
+
+- job: job_win_32_bit_self_hosted
+  pool: 'Default'
+  timeoutInMinutes: 5
+
+  steps:
+  - task: NodeTool@0
+    enabled: false
+    inputs:
+      versionSpec: '8.x'
+    displayName: 'Install Node.js'
+  - script: |
+      npm install
+      npm install electron-builder -g
+      electron-builder --win
+    displayName: 'Windows 32-bit'
+  - task: CopyFiles@2
+    inputs:
+      sourceFolder: '$(Build.SourcesDirectory)\dist'
+      contents: '*.exe'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: "Windows 32-bit"
+  #- task: GithubRelease@0 
+  #  displayName: 'Create GitHub Release'      
+  #  inputs:
+  #    githubConnection: speeduino
+  #    repositoryName: speeduino/SpeedyLoader
+  #    action: 'create'
+  #    target: '$(build.sourceVersion)'
+  #    assets: $(Build.ArtifactStagingDirectory)/*.zip
+  #    addChangeLog: true
+  #    isDraft: true
