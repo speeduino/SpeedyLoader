@@ -70,6 +70,11 @@ ipcMain.on('download', (e, args) => {
   }
 
   //console.log("Filename: " + fullFile );
+  options = {};
+  if(filename == "Speeduino%20base%20tune.msq")
+  {
+    options = { saveAs: true };
+  }
 
   fs.exists(fullFile, (exists) => {
     if (exists) {
@@ -77,7 +82,7 @@ ipcMain.on('download', (e, args) => {
       e.sender.send( "download complete", fullFile, "exists" );
     } 
     else {
-      download(BrowserWindow.getFocusedWindow(), args.url)
+      download(BrowserWindow.getFocusedWindow(), args.url, options)
         .then(dl => e.sender.send( "download complete", dl.getSavePath(), dl.getState() ) )
         .catch(console.error);
     }

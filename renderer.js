@@ -166,6 +166,21 @@ function downloadIni()
 
 }
 
+function downloadTune()
+{
+
+    var e = document.getElementById('versionsSelect');
+    var DLurl = "https://raw.githubusercontent.com/noisymime/speeduino/" + e.options[e.selectedIndex].value + "/reference/Base%20Tunes/Speeduino%20base%20tune.msq";
+    console.log("Downloading: " + DLurl);
+
+    //Download the ini file
+    ipcRenderer.send("download", {
+        url: DLurl,
+        properties: {directory: "downloads"}
+    });
+
+}
+
 function uploadFW()
 {
     //Jump to the progress section
