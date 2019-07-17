@@ -3,6 +3,8 @@ const {ipcRenderer} = require("electron")
 const {remote} = require('electron')
 const { shell } = require('electron')
 
+var basetuneList = [];
+
 function refreshSerialPorts()
 {
     serialport.list((err, ports) => {
@@ -87,8 +89,10 @@ function refreshAvailableFirmwares()
     //Disable the buttons. These are only re-enabled if the retrieve is successful
     var DetailsButton = document.getElementById("btnDetails");
     var ChoosePortButton = document.getElementById("btnChoosePort");
+    var basetuneButton = document.getElementById("btnBasetune");
     DetailsButton.disabled = true;
     ChoosePortButton.disabled = true;
+    basetuneButton.disabled = true;
 
     var request = require('request');
     request.get('http://speeduino.com/fw/versions', {timeout: 10000}, function (error, response, body) 
@@ -107,10 +111,12 @@ function refreshAvailableFirmwares()
                 select.appendChild(newOption);
             }
             select.selectedIndex = 0;
+            refreshBasetunes();
 
             //Re-enable the buttons
             DetailsButton.disabled = false;
             ChoosePortButton.disabled = false;
+            basetuneButton.disabled = false;
         }
         else if(error)
         {
@@ -136,6 +142,71 @@ function refreshAvailableFirmwares()
     );
 }
 
+function refreshBasetunes()
+{
+    //Check whether the base tunes list has been populated yet
+    if(basetuneList === undefined || basetuneList.length == 0)
+    {
+        console.log("No tunes loaded. Retrieving from server");
+        //Load the json
+        var url = "https://speeduino.com/fw/basetunes.json";
+        
+        var request = require('request');
+        const options = {
+            url: url,
+            headers: {
+            'User-Agent': 'request'
+            }
+        };
+
+        request.get(options, function (error, response, body) {
+            if (!error ) 
+            {
+                basetuneList = JSON.parse(body);
+                refreshBasetunes();
+            }
+        });
+    }
+    else
+    {
+        //JSON list of base tunes has been downloaded
+
+        //Get the display list object
+        var select = document.getElementById('basetunesSelect');
+
+        //Get the currently selected version
+        selectElement = document.getElementById('versionsSelect');
+        if(selectElement.selectedIndex == -1) { return; } //Check for no value being selected
+        var selectedFW = selectElement.options[selectElement.selectedIndex].value;
+
+        //Clear the current options from the list
+        while(select.options.length)
+        {
+            select.remove(0);
+        }
+
+        for (var tune in basetuneList) 
+        {
+            //Check whether the current tune was available for the selected firmware
+            if(parseInt(basetuneList[tune].introduced) <= parseInt(selectedFW))
+            {
+                var url = basetuneList[tune].baseURL.replace("$VERSION", selectedFW) + basetuneList[tune].filename;
+                //console.log("Tune url: " + url);
+                //console.log("Found a valid tune: " + basetuneList[tune].displayName);
+                var newOption = document.createElement('option');
+                newOption.style.background = "#022b3a";
+                newOption.value = url;
+                newOption.innerHTML = basetuneList[tune].displayName;
+                select.appendChild(newOption);
+            }
+            
+        }
+
+        //Finally update the selected firmware label on the basetunes page
+        document.getElementById('basetunesSelectedFW').innerHTML = selectedFW;
+    }
+}
+
 function downloadHex()
 {
 
@@ -155,7 +226,7 @@ function downloadIni()
 {
 
     var e = document.getElementById('versionsSelect');
-    var DLurl = "http://speeduino.com/fw/" + e.options[e.selectedIndex].value + ".ini";
+    var DLurl = "https://speeduino.com/fw/" + e.options[e.selectedIndex].value + ".ini";
     console.log("Downloading: " + DLurl);
 
     //Download the ini file
@@ -164,27 +235,27 @@ function downloadIni()
         properties: {directory: "downloads"}
     });
 
+}
+
+function downloadBasetune()
+{
+    var basetuneSelect = document.getElementById('basetunesSelect');
+    var version = document.getElementById('versionsSelect');
+    //var DLurl = "https://github.com/noisymime/speeduino/raw/" + version + "/reference/Base%20Tunes/" + e.options[e.selectedIndex].value;
+    var DLurl = basetuneSelect.options[basetuneSelect.selectedIndex].value;
+    console.log("Downloading: " + DLurl);
+
+    //Download the ini file
+    ipcRenderer.send("download", {
+        url: DLurl,
+        properties: {directory: "downloads"}
+    });
 }
 
 //Installing the Windows drivers
 function installDrivers()
 {
     ipcRenderer.send("installWinDrivers", {
-    });
-
-}
-
-function downloadTune()
-{
-
-    var e = document.getElementById('versionsSelect');
-    var DLurl = "https://raw.githubusercontent.com/noisymime/speeduino/" + e.options[e.selectedIndex].value + "/reference/Base%20Tunes/Speeduino%20base%20tune.msq";
-    console.log("Downloading: " + DLurl);
-
-    //Download the ini file
-    ipcRenderer.send("download", {
-        url: DLurl,
-        properties: {directory: "downloads"}
     });
 
 }
@@ -330,6 +401,7 @@ window.onload = function () {
     document.getElementById('title').innerHTML = "Speeduino Universal Firmware Loader (v" + remote.app.getVersion() + ")"
     
     refreshAvailableFirmwares();
+    refreshBasetunes();
     refreshSerialPorts();
     checkForUpdates();
     

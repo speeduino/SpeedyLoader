@@ -71,7 +71,7 @@ ipcMain.on('download', (e, args) => {
 
   //console.log("Filename: " + fullFile );
   options = {};
-  if(filename == "Speeduino%20base%20tune.msq")
+  if(filename.split('.').pop() == "msq")
   {
     options = { saveAs: true };
   }

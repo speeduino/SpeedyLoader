@@ -2370,6 +2370,11 @@ input, select, textarea {
 			display: none;
 		}
 
+		select4 option {
+			color: #ffffff;
+			background: #022b3a;
+		}
+
 	input[type="text"],
 	input[type="password"],
 	input[type="email"],
@@ -3250,6 +3255,14 @@ input, select, textarea {
 
 		.wrapper.style3-alt {
 			background-color: #953d75;
+		}
+
+		.wrapper.style4 {
+			background-color: #022b3a;
+		}
+
+		.wrapper.style4-alt {
+			background-color: #022b3a;
 		}
 
 		.wrapper.fullscreen {

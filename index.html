@@ -26,6 +26,7 @@
  <li><a href="#details">Firmware Details</a></li>
  <li><a href="#port">Choose Port</a></li>
  <li><a href="#progress">Progress</a></li>
+ <li><a href="#basetunes">Base Tunes</a></li>
  </ul>
  </nav>
  </div>
@@ -39,12 +40,17 @@
  <div style="display: none; text-align: center;" id="update_text"><a href="" id="update_url" target="_blank">A new version is available. Click here to download</a></div>
  <div class="inner">
  <center><img src="assets/speeduino logo_white.png" width="235"/></center>
+
  <!--<h1>Firmware Loader</h1>-->
  <p>Available Firmwares:
-    <select name="firmwares" class="select" id="versionsSelect" size="10" width="20" ></select>
+    <select name="firmwares" class="select" id="versionsSelect" size="10" width="20" onClick="refreshBasetunes();"></select>
+    <ul class="actions">
+        <li><input type='button' id="btnChoosePort" value="Choose Port" onclick="window.location.href='#port';" /></li>
+    </ul>
+    <p>Other actions:</p>
     <ul class="actions">
         <li><input type='button' id="btnDetails" value="View Firmware Notes" onclick="refreshDetails();" /></li>
-        <li><input type='button' id="btnChoosePort" value="Choose Port" onclick="window.location.href='#port';" /></li>
+        <li><input type='button' value="Get Base Tune" id="btnBasetune" onclick="window.location.href='#basetunes';" /></li> 
     </ul>
  </p>
  <div id="error"></div>
@@ -62,7 +68,7 @@
         <div id="detailsText" style="padding-left: 0.9em; padding-right: 0.9em; overflow-y: auto; height: 50vh;"></div>
     </div>
     <ul class="actions">
-        <li><input type='button' value="Download Base Tune" id="btnBasetune" onclick="downloadTune();" /></li> 
+        <li><input type='button' value="Get Base Tune" id="btnBasetune" onclick="window.location.href='#basetunes';" /></li> 
         <li><input type='button' id="btnDetails" value="Change Version" onclick="window.location.href='#loader';" /></li>
         <li><input type='button' id="btnChoosePort" value="Install" onclick="window.location.href='#port';" /></li>
     </ul>
@@ -106,12 +112,47 @@
         </section>
     </div>
     <ul class="actions">
+        <li><input type='button' id="btnChoosePort" value="Choose Port" onclick="window.location.href='#port';" /></li> 
         <li><input type='button' value="Burn again" id="btnReinstall" onclick="uploadFW();" /></li>
-        <li><input type='button' value="Download Base Tune" id="btnBasetune" onclick="downloadTune();" /></li> 
+        <li><input type='button' value="Get Base Tune" id="btnBasetune" onclick="window.location.href='#basetunes';" /></li> 
+    </ul>
+    <ul class="actions">
         <li><input type='button' value="Exit" id="btnExit" onclick="quit();" /></li>   
     </ul>
  </div>
  </section>
+
+  <!-- Firmware details -->
+<section id="details" class="wrapper style1-alt spotlights" style="display: none; height: 100vh;">
+<div class="inner">
+    <h1>Firmware Notes</h1>
+    
+    <div class="features major" >
+        <h2><div id="detailsHeading" style="padding-left: 0.55em;" ></div></h2>
+        <div id="detailsText" style="padding-left: 0.9em; padding-right: 0.9em; overflow-y: auto; height: 50vh;"></div>
+    </div>
+    <ul class="actions">
+        <li><input type='button' id="btnDetails" value="Change Version" onclick="window.location.href='#loader';" /></li>
+        <li><input type='button' id="btnChoosePort" value="Install" onclick="window.location.href='#port';" /></li>
+    </ul>
+</div>
+</section>
+
+<!-- Base Tune download -->
+<section id="basetunes" class="wrapper style4 fullscreen fade-up" style="height: 100vh;">
+<div class="inner">
+    <h1>Base Tunes</h1>
+    <p>
+        Selected firmware: <span id="basetunesSelectedFW"></span><br />
+        Available Base Tunes:
+        <select name="basetunes" class="select4" id="basetunesSelect" size="10" width="20" ></select>
+        <ul class="actions">
+            <li><input type='button' value="Change firmware version" onclick="window.location.href='#loader';" /></li>
+            <li><input type='button' id="btnDownloadBasetune" value="Download tune" onclick="downloadBasetune();" /></li>
+        </ul>
+    </p>
+</div>
+</section>
 
  </div>
 
