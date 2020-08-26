@@ -13,7 +13,10 @@ var avrdudeIsRunning = false;
 
 function createWindow () {
   // Create the browser window.
-  win = new BrowserWindow({ width: 800, height: 600, backgroundColor: '#312450' })
+  win = new BrowserWindow({
+                          width: 800, height: 600, backgroundColor: '#312450', 
+                          webPreferences: {nodeIntegration: true}
+                          })
 
   // and load the index.html of the app.
   win.loadFile('index.html')
@@ -29,6 +32,10 @@ function createWindow () {
     win = null
   })
 }
+
+//Required for newer versions of Electron to work with serialport
+app.allowRendererProcessReuse = false
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
