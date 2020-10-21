@@ -1,0 +1,12 @@
+{
+    "description": "Teensy Loader",
+    "name": "tool-teensy",
+    "system": [
+        "linux_armv6l",
+        "linux_armv7l",
+        "linux_armv8l",
+        "linux_aarch64"
+    ],
+    "url": "https://www.pjrc.com/teensy/loader.html",
+    "version": "1.3.0"
+}

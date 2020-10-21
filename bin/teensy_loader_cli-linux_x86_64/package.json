@@ -1,0 +1,9 @@
+{
+    "description": "Teensy Loader",
+    "name": "tool-teensy",
+    "system": [
+        "linux_x86_64"
+    ],
+    "url": "https://www.pjrc.com/teensy/loader.html",
+    "version": "1.152.200516"
+}

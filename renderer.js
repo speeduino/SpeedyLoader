@@ -4,6 +4,8 @@ const {remote} = require('electron')
 const { shell } = require('electron')
 
 var basetuneList = [];
+var isMega = false;
+var isTeensy = false;
 
 function refreshSerialPorts()
 {
@@ -34,8 +36,29 @@ function refreshSerialPorts()
             var newOption = document.createElement('option');
             newOption.value = ports[i].comName;
             newOption.innerHTML = ports[i].comName;
+            if(ports[i].vendorId == "2341")
+            {
+              //Arduino device
+              if(ports[i].productId == "0010" || ports[i].productId == "0042") 
+              { 
+                //Mega2560
+                newOption.innerHTML = newOption.innerHTML + " (Arduino Mega)"; 
+                isMega = true;
+              }
+            }
+            else if(ports[i].vendorId == "16c0")
+            {
+              //Teensy
+              if(ports[i].productId == "0483")
+              {
+                //Teensy - Unfortunately all Teensy devices use the same device ID :(
+                newOption.innerHTML = newOption.innerHTML + " (Teensy)"; 
+              } 
+            }
             select.add(newOption);
+            //console.log(ports[i].serialNumber );
         }
+        
         var button = document.getElementById("btnInstall")
         if(ports.length > 0) 
         {
@@ -207,12 +230,23 @@ function refreshBasetunes()
     }
 }
 
-function downloadHex()
+function downloadHex(isTeensy)
 {
 
     var e = document.getElementById('versionsSelect');
-    var DLurl = "http://speeduino.com/fw/bin/" + e.options[e.selectedIndex].value + ".hex";
-    console.log("Downloading: " + DLurl);
+
+    var DLurl;
+    if(isTeensy)
+    { 
+      DLurl = "http://speeduino.com/fw/teensy35/" + e.options[e.selectedIndex].value + ".hex";
+      console.log("Downloading Teensy 35 firmware: " + DLurl);
+    }
+    else
+    {
+      
+      DLurl = "http://speeduino.com/fw/bin/" + e.options[e.selectedIndex].value + ".hex";
+      console.log("Downloading AVR firmware: " + DLurl);
+    }
     
     //Download the Hex file
     ipcRenderer.send("download", {
@@ -276,6 +310,10 @@ function uploadFW()
     spinner.classList.remove('fa-times');
     spinner.classList.add('fa-spinner');
 
+    //Lookup what platform we're using
+    var portSelect = document.getElementById('portsSelect');
+    var isTeensy = portSelect.innerHTML.includes("Teensy");
+
     //Hide the terminal section incase it was there from a previous burn attempt
     document.getElementById('terminalSection').style.display = "none";
     //Same for the ini location link
@@ -296,7 +334,7 @@ function uploadFW()
             statusText.innerHTML = "Downloading firmware"
             document.getElementById('iniFileText').style.display = "block"
             document.getElementById('iniFileLocation').innerHTML = file
-            downloadHex();
+            downloadHex(isTeensy);
         }
         else if(extension == "hex")
         {
@@ -308,10 +346,20 @@ function uploadFW()
             console.log("Using port: " + uploadPort);
 
             //Begin the upload
-            ipcRenderer.send("uploadFW", {
+            if(isTeensy)
+            {
+              ipcRenderer.send("uploadFW_teensy35", {
                 port: uploadPort,
                 firmwareFile: file
-            });
+              });
+            }
+            else
+            {
+              ipcRenderer.send("uploadFW", {
+                  port: uploadPort,
+                  firmwareFile: file
+              });
+            }
         }
         console.log();
     });

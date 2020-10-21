@@ -3,6 +3,7 @@ const {download} = require('electron-dl')
 const {spawn} = require('child_process');
 const {execFile} = require('child_process');
 const fs = require('fs');
+const path = require('path');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -10,6 +11,8 @@ let win
 
 var avrdudeErr = "";
 var avrdudeIsRunning = false;
+var teensyLoaderIsRunning = false;
+var teensyLoaderErr = ""
 
 function createWindow () {
   // Create the browser window.
@@ -174,20 +177,84 @@ ipcMain.on('uploadFW', (e, args) => {
     }
     
   });
+});
+
+  ipcMain.on('uploadFW_teensy35', (e, args) => {
+
+    if(teensyLoaderIsRunning == true) { return; }
+    teensyLoaderIsRunning = true; //Indicate that an avrdude process has started
+    var platform;
+  
+    var burnStarted = false;
+    var burnPercent = 0;
+  
+    //All Windows builds use the 32-bit binary
+    if(process.platform == "win32") 
+    { 
+      platform = "teensy_loader_cli-windows"; 
+    }
+    //All Mac builds use the 64-bit binary
+    else if(process.platform == "darwin") 
+    { 
+      platform = "teensy_loader_cli-darwin-x86_64";
+    }
+    else if(process.platform == "linux") 
+    { 
+      if(process.arch == "x32") { platform = "teensy_loader_cli-linux_i686"; }
+      else if(process.arch == "x64") { platform = "teensy_loader_cli-linux_x86_64"; }
+      else if(process.arch == "arm") { platform = "teensy_loader_cli-armhf"; }
+      else if(process.arch == "arm64") { platform = "teensy_loader_cli-aarch64"; }
+    }
+  
+    var executableName = __dirname + "/bin/" + platform + "/teensy_post_compile";
+    executableName = executableName.replace('app.asar',''); //This is important for allowing the binary to be found once the app is packaed into an asar
+    var configName = executableName + ".conf";
+    if(process.platform == "win32") { executableName = executableName + '.exe'; } //This must come after the configName line above
+  
+    var execArgs = ['-board=TEENSY35', '-reboot', '-file='+path.basename(args.firmwareFile, '.hex'), '-path='+path.dirname(args.firmwareFile), '-tools='+executableName.replace('/teensy_post_compile', "")];
+    console.log(execArgs);
+  
+    console.log(executableName);
+    const child = execFile(executableName, execArgs);
+  
+    child.stdout.on('data', (data) => {
+      console.log(`teensy_loader_cli stdout:\n${data}`);
+    });
+  
+    child.stderr.on('data', (data) => {
+      console.log(`teensy_loader_cli stderr: ${data}`);
+      teensyLoaderErr = teensyLoaderErr + data;
+  
+      //Check if avrdude has started the actual burn yet, and if so, track the '#' characters that it prints. Each '#' represents 1% of the total burn process (50 for write and 50 for read)
+      if (burnStarted == true)
+      {
+        if(data=="#") { burnPercent += 1; }
+        e.sender.send( "upload percent", burnPercent );
+      }
+      else
+      {
+        //This is a hack, but basically watch the output from avrdude for the term 'Writing | ', everything after that is the #s indicating 1% of burn. 
+        if(teensyLoaderErr.substr(teensyLoaderErr.length - 10) == "Writing | ")
+        {
+          burnStarted = true;
+        }
+      }
+      
+    });
 
   child.on('error', (err) => {
     console.log('Failed to start subprocess.');
     console.log(err);
-    avrdudeIsRunning = false;
+    teensyLoaderIsRunning = false;
   });
 
   child.on('close', (code) => {
-    avrdudeIsRunning = false;
+    teensyLoaderIsRunning = false;
     if (code !== 0) 
     {
-      console.log(`avrdude process exited with code ${code}`);
-      e.sender.send( "upload error", avrdudeErr )
-      avrdudeErr = "";
+      console.log(`teensyLoader process exited with code ${code}`);
+      e.sender.send( "upload error", teensyLoaderErr )
+      teensyLoaderErr = "";
     }
     else
     {
