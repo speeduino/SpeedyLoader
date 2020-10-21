@@ -3881,6 +3881,7 @@ input, select, textarea {
   color: #FFFFFF;
   cursor: default;
   height: 7em;
+  height: 0;
   left: 0;
   overflow-x: auto;
   overflow-y: auto;
@@ -3892,6 +3893,8 @@ input, select, textarea {
   width: 100%;
   padding: 0;
   line-height: 3.5em;
+  transition-property:height; 
+  transition-duration:1s;
 }
 
   #sponsor > .inner {

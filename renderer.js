@@ -346,7 +346,7 @@ function uploadFW()
             console.log("Using port: " + uploadPort);
 
             //Show the sponsor banner
-            document.getElementById('sponsor').style.display = "block"
+            document.getElementById('sponsor').style.height = "7em"
 
             //Begin the upload
             if(isTeensy)
