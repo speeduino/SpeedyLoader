@@ -34,7 +34,15 @@ function createWindow () {
     // when you should delete the corresponding element.
     win = null
   })
+
+  //This forces any links that have a target of _blank to open in a browser rather than Electron window
+  win.webContents.on('new-window', function(e, url) {
+  e.preventDefault();
+  require('electron').shell.openExternal(url);
+  });
 }
+
+
 
 //Required for newer versions of Electron to work with serialport
 app.allowRendererProcessReuse = false
@@ -175,8 +183,28 @@ ipcMain.on('uploadFW', (e, args) => {
         burnStarted = true;
       }
     }
-    
   });
+
+  child.on('error', (err) => {
+    console.log('Failed to start subprocess.');
+    console.log(err);
+    avrDudeIsRunning = false;
+  });
+
+  child.on('close', (code) => {
+    avrdudeIsRunning = false;
+    if (code !== 0) 
+    {
+      console.log(`avrdude process exited with code ${code}`);
+      e.sender.send( "upload error", avrdudeErr )
+      avrdudeErr = "";
+    }
+    else
+    {
+      e.sender.send( "upload completed", code )
+    }
+  });
+
 });
 
   ipcMain.on('uploadFW_teensy35', (e, args) => {
@@ -212,7 +240,7 @@ ipcMain.on('uploadFW', (e, args) => {
     if(process.platform == "win32") { executableName = executableName + '.exe'; } //This must come after the configName line above
   
     var execArgs = ['-board=TEENSY35', '-reboot', '-file='+path.basename(args.firmwareFile, '.hex'), '-path='+path.dirname(args.firmwareFile), '-tools='+executableName.replace('/teensy_post_compile', "")];
-    console.log(execArgs);
+    //console.log(execArgs);
   
     console.log(executableName);
     const child = execFile(executableName, execArgs);

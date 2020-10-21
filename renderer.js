@@ -345,6 +345,9 @@ function uploadFW()
             uploadPort = e.options[e.selectedIndex].value;
             console.log("Using port: " + uploadPort);
 
+            //Show the sponsor banner
+            document.getElementById('sponsor').style.display = "block"
+
             //Begin the upload
             if(isTeensy)
             {
@@ -374,6 +377,7 @@ function uploadFW()
 
         //Re-enable the re-burn button
         reinstallButton.disabled = false;
+
     });
 
     ipcRenderer.on("upload percent", (event, percent) => {
