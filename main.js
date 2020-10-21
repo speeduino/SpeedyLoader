@@ -237,11 +237,13 @@ ipcMain.on('uploadFW', (e, args) => {
     var executableName = __dirname + "/bin/" + platform + "/teensy_post_compile";
     executableName = executableName.replace('app.asar',''); //This is important for allowing the binary to be found once the app is packaed into an asar
     var configName = executableName + ".conf";
-    if(process.platform == "win32") { executableName = executableName + '.exe'; } //This must come after the configName line above
+    
   
     var execArgs = ['-board=TEENSY35', '-reboot', '-file='+path.basename(args.firmwareFile, '.hex'), '-path='+path.dirname(args.firmwareFile), '-tools='+executableName.replace('/teensy_post_compile', "")];
     //console.log(execArgs);
   
+    if(process.platform == "win32") { executableName = executableName + '.exe'; } //This must come after the configName line above
+    
     console.log(executableName);
     const child = execFile(executableName, execArgs);
   
