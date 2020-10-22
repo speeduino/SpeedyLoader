@@ -238,7 +238,9 @@ function downloadHex(isTeensy)
     var DLurl;
     if(isTeensy)
     { 
-      DLurl = "http://speeduino.com/fw/teensy35/" + e.options[e.selectedIndex].value + ".hex";
+      if(e.options[e.selectedIndex].value == 'master') { DLurl = "http://speeduino.com/fw/teensy35/" + e.options[e.selectedIndex].value + ".hex"; }
+      else { DLurl = "http://speeduino.com/fw/teensy35/" + e.options[e.selectedIndex].value + "-teensy35.hex"; }
+      
       console.log("Downloading Teensy 35 firmware: " + DLurl);
     }
     else
