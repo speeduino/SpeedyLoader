@@ -46,7 +46,7 @@ function refreshSerialPorts()
                 isMega = true;
               }
             }
-            else if(ports[i].vendorId == "16c0")
+            else if(ports[i].vendorId == "16c0" || ports[i].vendorId == "16C0")
             {
               //Teensy
               if(ports[i].productId == "0483")
