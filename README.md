@@ -1,11 +1,9 @@
 # SpeedyLoader
 SpeedyLoader is a universal (Cross platform) firmware loader for Speeduino devices. It avoids the need for any compiling and allows the user to select a firmware version and then automatically downloads a pre-compiled version. 
 
-Currently in early development. Binaries will be made available when ready
-
 ## Running from binary
 
-## Linux
+### Linux
 The AppImage pack requires the following packages be installed:
 * libusb-1.0-0:i386
 * libusb-0.1-4:i386
