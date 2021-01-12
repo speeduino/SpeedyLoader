@@ -39,84 +39,77 @@ function getTeensyVersion(id)
 
 function refreshSerialPorts()
 {
-    serialport.list((err, ports) => {
-        console.log('Serial ports found: ', ports);
+  serialport.list().then(ports => {
+    console.log('Serial ports found: ', ports);
+  
+    if (ports.length === 0) {
+      document.getElementById('serialDetectError').textContent = 'No ports discovered'
+    }
+  
+    select = document.getElementById('portsSelect');
 
-        if (err) {
-          document.getElementById('serialDetectError').textContent = err.message
-          return
-        } else {
-          document.getElementById('serialDetectError').textContent = ''
-        }
-      
-        if (ports.length === 0) {
-          document.getElementById('serialDetectError').textContent = 'No ports discovered'
-        }
-      
-        select = document.getElementById('portsSelect');
+    //Clear the current options
+    for (i = 0; i <= select.options.length; i++) 
+    {
+        select.remove(0); //Always 0 index (As each time an item is removed, everything shuffles up 1 place)
+    }
 
-        //Clear the current options
-        for (i = 0; i <= select.options.length; i++) 
+    //Load the current serial values
+    for(var i = 0; i < ports.length; i++)
+    {
+        var newOption = document.createElement('option');
+        newOption.value = ports[i].path;
+        newOption.innerHTML = ports[i].path;
+        if(ports[i].vendorId == "2341")
         {
-            select.remove(0); //Always 0 index (As each time an item is removed, everything shuffles up 1 place)
+          //Arduino device
+          if(ports[i].productId == "0010" || ports[i].productId == "0042") 
+          { 
+            //Mega2560
+            newOption.innerHTML = newOption.innerHTML + " (Arduino Mega)"; 
+            newOption.setAttribute("board", "ATMEGA2560");
+          }
         }
-
-        //Load the current serial values
-        for(var i = 0; i < ports.length; i++)
+        else if(ports[i].vendorId == "16c0" || ports[i].vendorId == "16C0")
         {
-            var newOption = document.createElement('option');
-            newOption.value = ports[i].comName;
-            newOption.innerHTML = ports[i].comName;
-            if(ports[i].vendorId == "2341")
-            {
-              //Arduino device
-              if(ports[i].productId == "0010" || ports[i].productId == "0042") 
-              { 
-                //Mega2560
-                newOption.innerHTML = newOption.innerHTML + " (Arduino Mega)"; 
-                newOption.setAttribute("board", "ATMEGA2560");
-              }
-            }
-            else if(ports[i].vendorId == "16c0" || ports[i].vendorId == "16C0")
-            {
-              //Teensy
-              var teensyDevices = usb.getDeviceList().filter( function(d) { return d.deviceDescriptor.idVendor===0x16C0; });
-              var teensyVersion = getTeensyVersion(teensyDevices[0].deviceDescriptor.bcdDevice);
-              newOption.innerHTML = newOption.innerHTML + " (Teensy " + teensyVersion + ")";
+          //Teensy
+          var teensyDevices = usb.getDeviceList().filter( function(d) { return d.deviceDescriptor.idVendor===0x16C0; });
+          var teensyVersion = getTeensyVersion(teensyDevices[0].deviceDescriptor.bcdDevice);
+          newOption.innerHTML = newOption.innerHTML + " (Teensy " + teensyVersion + ")";
 
-              //Get the short copy of the teensy version
-              teensyVersion = teensyVersion.replace(".", "");
-              newOption.setAttribute("board", "TEENSY"+teensyVersion);
-            }
-            select.add(newOption);
-            //console.log(ports[i].serialNumber );
-        }
-
-        //Look for any unintialised Teensy boards (ie boards in HID rather than serial mode)
-        var uninitialisedTeensyDevices = usb.getDeviceList().filter( function(d) {
-          return d.deviceDescriptor.idVendor===0x16C0 && d.configDescriptor.interfaces[0][0].bInterfaceClass == 3; //Interface class 3 is HID
-        });
-        uninitialisedTeensyDevices.forEach((device, index) => {
-          console.log("Uninit Teensy found: ", getTeensyVersion(device.deviceDescriptor.bcdDevice))
-          var newOption = document.createElement('option');
-          newOption.value = "TeensyHID";
-          var teensyVersion = getTeensyVersion(device.deviceDescriptor.bcdDevice);
-          newOption.innerHTML = "Uninitialised Teensy " + teensyVersion;
+          //Get the short copy of the teensy version
           teensyVersion = teensyVersion.replace(".", "");
           newOption.setAttribute("board", "TEENSY"+teensyVersion);
-          newOption.setAttribute("uninitialised", "true");
-          select.add(newOption);
-        })
-        
-        var button = document.getElementById("btnInstall")
-        if(ports.length > 0) 
-        {
-            select.selectedIndex = 0;
-            button.disabled = false;
         }
-        else { button.disabled = true; }
-      
-      })
+        select.add(newOption);
+        //console.log(ports[i].serialNumber );
+    }
+
+    //Look for any unintialised Teensy boards (ie boards in HID rather than serial mode)
+    var uninitialisedTeensyDevices = usb.getDeviceList().filter( function(d) {
+      return d.deviceDescriptor.idVendor===0x16C0 && d.configDescriptor.interfaces[0][0].bInterfaceClass == 3; //Interface class 3 is HID
+    });
+    uninitialisedTeensyDevices.forEach((device, index) => {
+      console.log("Uninit Teensy found: ", getTeensyVersion(device.deviceDescriptor.bcdDevice))
+      var newOption = document.createElement('option');
+      newOption.value = "TeensyHID";
+      var teensyVersion = getTeensyVersion(device.deviceDescriptor.bcdDevice);
+      newOption.innerHTML = "Uninitialised Teensy " + teensyVersion;
+      teensyVersion = teensyVersion.replace(".", "");
+      newOption.setAttribute("board", "TEENSY"+teensyVersion);
+      newOption.setAttribute("uninitialised", "true");
+      select.add(newOption);
+    })
+    
+    var button = document.getElementById("btnInstall")
+    if(ports.length > 0) 
+    {
+        select.selectedIndex = 0;
+        button.disabled = false;
+    }
+    else { button.disabled = true; }
+  
+  })
 }
 
 function refreshDetails()
