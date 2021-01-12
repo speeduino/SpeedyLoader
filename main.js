@@ -207,7 +207,7 @@ ipcMain.on('uploadFW', (e, args) => {
 
 });
 
-  ipcMain.on('uploadFW_teensy35', (e, args) => {
+  ipcMain.on('uploadFW_teensy', (e, args) => {
 
     if(teensyLoaderIsRunning == true) { return; }
     teensyLoaderIsRunning = true; //Indicate that an avrdude process has started
@@ -239,7 +239,7 @@ ipcMain.on('uploadFW', (e, args) => {
     var configName = executableName + ".conf";
     
   
-    var execArgs = ['-board=TEENSY35', '-reboot', '-file='+path.basename(args.firmwareFile, '.hex'), '-path='+path.dirname(args.firmwareFile), '-tools='+executableName.replace('/teensy_post_compile', "")];
+    var execArgs = ['-board='+args.board, '-reboot', '-file='+path.basename(args.firmwareFile, '.hex'), '-path='+path.dirname(args.firmwareFile), '-tools='+executableName.replace('/teensy_post_compile', "")];
     //console.log(execArgs);
   
     if(process.platform == "win32") { executableName = executableName + '.exe'; } //This must come after the configName line above
@@ -263,7 +263,7 @@ ipcMain.on('uploadFW', (e, args) => {
       }
       else
       {
-        //This is a hack, but basically watch the output from avrdude for the term 'Writing | ', everything after that is the #s indicating 1% of burn. 
+        //This is a hack, but basically watch the output from teensy loader for the term 'Writing | ', everything after that is the #s indicating 1% of burn. 
         if(teensyLoaderErr.substr(teensyLoaderErr.length - 10) == "Writing | ")
         {
           burnStarted = true;

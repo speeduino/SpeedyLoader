@@ -5,7 +5,6 @@ const {remote} = require('electron')
 const { shell } = require('electron')
 
 var basetuneList = [];
-var isTeensy = false;
 
 function getTeensyVersion(id)
 {
@@ -97,7 +96,6 @@ function refreshSerialPorts()
       newOption.innerHTML = "Uninitialised Teensy " + teensyVersion;
       teensyVersion = teensyVersion.replace(".", "");
       newOption.setAttribute("board", "TEENSY"+teensyVersion);
-      newOption.setAttribute("uninitialised", "true");
       select.add(newOption);
     })
     
@@ -272,24 +270,32 @@ function refreshBasetunes()
     }
 }
 
-function downloadHex(isTeensy)
+function downloadHex(board)
 {
 
     var e = document.getElementById('versionsSelect');
 
     var DLurl;
-    if(isTeensy)
-    { 
-      if(e.options[e.selectedIndex].value == 'master') { DLurl = "http://speeduino.com/fw/teensy35/" + e.options[e.selectedIndex].value + ".hex"; }
-      else { DLurl = "http://speeduino.com/fw/teensy35/" + e.options[e.selectedIndex].value + "-teensy35.hex"; }
-      
-      console.log("Downloading Teensy 35 firmware: " + DLurl);
-    }
-    else
-    {
-      
-      DLurl = "http://speeduino.com/fw/bin/" + e.options[e.selectedIndex].value + ".hex";
-      console.log("Downloading AVR firmware: " + DLurl);
+    switch(board) {
+      case "TEENSY35":
+        if(e.options[e.selectedIndex].value == 'master') { DLurl = "http://speeduino.com/fw/teensy35/" + e.options[e.selectedIndex].value + ".hex"; }
+        else { DLurl = "http://speeduino.com/fw/teensy35/" + e.options[e.selectedIndex].value + "-teensy35.hex"; }
+        console.log("Downloading Teensy 35 firmware: " + DLurl);
+        break;
+      case "TEENSY36":
+        if(e.options[e.selectedIndex].value == 'master') { DLurl = "http://speeduino.com/fw/teensy36/" + e.options[e.selectedIndex].value + ".hex"; }
+        else { DLurl = "http://speeduino.com/fw/teensy36/" + e.options[e.selectedIndex].value + "-teensy36.hex"; }
+        console.log("Downloading Teensy 36 firmware: " + DLurl);
+        break;
+      case "TEENSY41":
+        if(e.options[e.selectedIndex].value == 'master') { DLurl = "http://speeduino.com/fw/teensy41/" + e.options[e.selectedIndex].value + ".hex"; }
+        else { DLurl = "http://speeduino.com/fw/teensy41/" + e.options[e.selectedIndex].value + "-teensy41.hex"; }
+        console.log("Downloading Teensy 41 firmware: " + DLurl);
+        break;
+      case "ATMEGA2560":
+        DLurl = "http://speeduino.com/fw/bin/" + e.options[e.selectedIndex].value + ".hex";
+        console.log("Downloading AVR firmware: " + DLurl);
+        break;
     }
     
     //Download the Hex file
@@ -356,7 +362,7 @@ function uploadFW()
 
     //Lookup what platform we're using
     var portSelect = document.getElementById('portsSelect');
-    var isTeensy = portSelect.innerHTML.includes("Teensy");
+    var uploadBoard = portSelect.options[portSelect.selectedIndex].getAttribute("board");
 
     //Hide the terminal section incase it was there from a previous burn attempt
     document.getElementById('terminalSection').style.display = "none";
@@ -368,7 +374,6 @@ function uploadFW()
     statusText.innerHTML = "Downloading INI file"
     downloadIni();
 
-
     ipcRenderer.on("download complete", (event, file, state) => {
         console.log("Saved file: " + file); // Full file path
 
@@ -378,7 +383,7 @@ function uploadFW()
             statusText.innerHTML = "Downloading firmware"
             document.getElementById('iniFileText').style.display = "block"
             document.getElementById('iniFileLocation').innerHTML = file
-            downloadHex(isTeensy);
+            downloadHex(uploadBoard);
             //downloadHex(e.options[e.selectedIndex].getAttribute("board"));
         }
         else if(extension == "hex")
@@ -388,17 +393,20 @@ function uploadFW()
             //Retrieve the select serial port
             var e = document.getElementById('portsSelect');
             uploadPort = e.options[e.selectedIndex].value;
+            
             console.log("Using port: " + uploadPort);
 
             //Show the sponsor banner
             document.getElementById('sponsor').style.height = "7em"
 
             //Begin the upload
-            if(isTeensy)
+            if(uploadBoard.includes("TEENSY"))
             {
-              ipcRenderer.send("uploadFW_teensy35", {
+              console.log("Uploadig using Teensy_loader")
+              ipcRenderer.send("uploadFW_teensy", {
                 port: uploadPort,
-                firmwareFile: file
+                firmwareFile: file,
+                board: uploadBoard
               });
             }
             else
