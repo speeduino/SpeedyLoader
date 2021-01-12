@@ -1,16 +1,47 @@
 const serialport = require('serialport')
+const usb = require('usb')
 const {ipcRenderer} = require("electron")
 const {remote} = require('electron')
 const { shell } = require('electron')
 
 var basetuneList = [];
-var isMega = false;
 var isTeensy = false;
+
+function getTeensyVersion(id)
+{
+  var idString = ""
+  switch(id) {
+    case 0x273:
+      idString = "LC"
+      break;
+    case 0x274:
+      idString = "3.0"
+      break;
+    case 0x275:
+      idString = "3.2"
+      break;
+    case 0x276:
+      idString = "3.5"
+      break;
+    case 0x277:
+      idString = "3.6"
+      break;
+    case 0x279:
+      idString = "4.0"
+      break;
+    case 0x280:
+      idString = "4.1"
+      break;
+  }
+
+  return idString;
+}
 
 function refreshSerialPorts()
 {
     serialport.list((err, ports) => {
         console.log('Serial ports found: ', ports);
+
         if (err) {
           document.getElementById('serialDetectError').textContent = err.message
           return
@@ -43,21 +74,39 @@ function refreshSerialPorts()
               { 
                 //Mega2560
                 newOption.innerHTML = newOption.innerHTML + " (Arduino Mega)"; 
-                isMega = true;
+                newOption.setAttribute("board", "ATMEGA2560");
               }
             }
             else if(ports[i].vendorId == "16c0" || ports[i].vendorId == "16C0")
             {
               //Teensy
-              if(ports[i].productId == "0483")
-              {
-                //Teensy - Unfortunately all Teensy devices use the same device ID :(
-                newOption.innerHTML = newOption.innerHTML + " (Teensy)"; 
-              } 
+              var teensyDevices = usb.getDeviceList().filter( function(d) { return d.deviceDescriptor.idVendor===0x16C0; });
+              var teensyVersion = getTeensyVersion(teensyDevices[0].deviceDescriptor.bcdDevice);
+              newOption.innerHTML = newOption.innerHTML + " (Teensy " + teensyVersion + ")";
+
+              //Get the short copy of the teensy version
+              teensyVersion = teensyVersion.replace(".", "");
+              newOption.setAttribute("board", "TEENSY"+teensyVersion);
             }
             select.add(newOption);
             //console.log(ports[i].serialNumber );
         }
+
+        //Look for any unintialised Teensy boards (ie boards in HID rather than serial mode)
+        var uninitialisedTeensyDevices = usb.getDeviceList().filter( function(d) {
+          return d.deviceDescriptor.idVendor===0x16C0 && d.configDescriptor.interfaces[0][0].bInterfaceClass == 3; //Interface class 3 is HID
+        });
+        uninitialisedTeensyDevices.forEach((device, index) => {
+          console.log("Uninit Teensy found: ", getTeensyVersion(device.deviceDescriptor.bcdDevice))
+          var newOption = document.createElement('option');
+          newOption.value = "TeensyHID";
+          var teensyVersion = getTeensyVersion(device.deviceDescriptor.bcdDevice);
+          newOption.innerHTML = "Uninitialised Teensy " + teensyVersion;
+          teensyVersion = teensyVersion.replace(".", "");
+          newOption.setAttribute("board", "TEENSY"+teensyVersion);
+          newOption.setAttribute("uninitialised", "true");
+          select.add(newOption);
+        })
         
         var button = document.getElementById("btnInstall")
         if(ports.length > 0) 
@@ -337,6 +386,7 @@ function uploadFW()
             document.getElementById('iniFileText').style.display = "block"
             document.getElementById('iniFileLocation').innerHTML = file
             downloadHex(isTeensy);
+            //downloadHex(e.options[e.selectedIndex].getAttribute("board"));
         }
         else if(extension == "hex")
         {
