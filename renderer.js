@@ -64,7 +64,7 @@ function refreshSerialPorts()
           //Arduino device
           if(ports[i].productId == "0010" || ports[i].productId == "0042") 
           { 
-            //Mega2560
+            //Mega2560 with 16u2
             newOption.innerHTML = newOption.innerHTML + " (Arduino Mega)"; 
             newOption.setAttribute("board", "ATMEGA2560");
           }
@@ -80,8 +80,18 @@ function refreshSerialPorts()
           teensyVersion = teensyVersion.replace(".", "");
           newOption.setAttribute("board", "TEENSY"+teensyVersion);
         }
+        else if(ports[i].vendorId == "1a86" || ports[i].vendorId == "1A86")
+        {
+          //CH340
+          newOption.innerHTML = newOption.innerHTML + " (Arduino Mega CH340)"; 
+          newOption.setAttribute("board", "ATMEGA2560");
+        }
+        else
+        {
+          //Unknown device, assume it's a mega2560
+          newOption.setAttribute("board", "ATMEGA2560");
+        }
         select.add(newOption);
-        //console.log(ports[i].serialNumber );
     }
 
     //Look for any unintialised Teensy boards (ie boards in HID rather than serial mode)
