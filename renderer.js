@@ -520,5 +520,7 @@ window.onload = function () {
     refreshSerialPorts();
     checkForUpdates();
     
+    usb.on('attach', refreshSerialPorts);
+    usb.on('detach', refreshSerialPorts);
 };
 

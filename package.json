@@ -18,15 +18,15 @@
   },
   "author": "Josh Stewart",
   "email": "sales@speeduino.com",
-  "license": "ISC",
+  "license": "GPL-3.0",
   "bugs": {
     "url": "https://github.com/speeduino/SpeedyLoader/issues"
   },
   "homepage": "https://github.com/speeduino/SpeedyLoader",
   "devDependencies": {
-    "electron": "^4.0.0",
-    "electron-packager": "^14.0.0",
-    "electron-rebuild": "^1.8.5"
+    "electron": "^11.2.0",
+    "electron-packager": "^15.2.0",
+    "electron-rebuild": "^2.3.4"
   },
   "dependencies": {
     "electron-dl": "^1.14.0",
