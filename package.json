@@ -1,6 +1,6 @@
 {
   "name": "SpeedyLoader",
-  "version": "1.4.1",
+  "version": "1.5",
   "description": "Speeduino universal firmware loader",
   "main": "main.js",
   "scripts": {
@@ -29,7 +29,7 @@
     "electron-rebuild": "^2.3.4"
   },
   "dependencies": {
-    "electron-dl": "^1.14.0",
+    "electron-dl": "^3.2.1",
     "marked": "^0.7.0",
     "request": "^2.88.0",
     "semver": "^6.1.3",
