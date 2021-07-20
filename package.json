@@ -30,6 +30,7 @@
   },
   "dependencies": {
     "electron-dl": "^3.2.1",
+    "json5": "^2.2.0",
     "marked": "^0.7.0",
     "request": "^2.88.0",
     "semver": "^6.1.3",

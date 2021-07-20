@@ -147,13 +147,19 @@
 <!-- Base Tune download -->
 <section id="basetunes" class="wrapper style4 fullscreen fade-up" style="height: 100vh;">
 <div class="inner">
-    <h1>Base Tunes</h1>
+    <h2 style="margin: 0;">Base Tunes</h1>
+    <p style="font-size: 12px;">
+        Tune Author: <select id="basetunesAuthor" class="select1" onChange="refreshBasetunesFilters()" ></select>
+        Make: <select id="basetunesMake" class="select1" onChange="refreshBasetunesFilters()" ></select>
+        Type: <select id="basetunesType" class="select1" onChange="refreshBasetunesFilters()" ></select><br/>
+    </p>
     <p>
-        Selected firmware: <span id="basetunesSelectedFW"></span><br />
-        Available Base Tunes:
-        <select name="basetunes" class="select4" id="basetunesSelect" size="10" width="20" ></select>
+        Available Tunes
+        <select name="basetunes" class="select4" id="basetunesSelect" size="10" width="20" onChange="refreshBasetunesDescription()"></select>
+        <div class="features major" >
+          <div id="tuneDetailsText" style="padding-left: 0.9em; padding-right: 0.9em; padding-top: 0.1em; overflow-y: auto; height: 17vh;"></div>
+        </div>
         <ul class="actions">
-            <li><input type='button' value="Change firmware version" onclick="window.location.href='#loader';" /></li>
             <li><input type='button' id="btnDownloadBasetune" value="Download tune" onclick="downloadBasetune();" /></li>
         </ul>
     </p>

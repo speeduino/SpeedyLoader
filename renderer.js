@@ -1,5 +1,6 @@
 const serialport = require('serialport')
 const usb = require('usb')
+const JSON5 = require('json5')
 const {ipcRenderer} = require("electron")
 const {remote} = require('electron')
 const { shell } = require('electron')
@@ -222,7 +223,8 @@ function refreshBasetunes()
     {
         console.log("No tunes loaded. Retrieving from server");
         //Load the json
-        var url = "https://speeduino.com/fw/basetunes.json";
+        //var url = "https://speeduino.com/fw/basetunes.json";
+        var url = "https://github.com/speeduino/Tunes/raw/main/index.json";
         
         var request = require('request');
         const options = {
@@ -235,7 +237,7 @@ function refreshBasetunes()
         request.get(options, function (error, response, body) {
             if (!error ) 
             {
-                basetuneList = JSON.parse(body);
+                basetuneList = JSON5.parse(body);
                 refreshBasetunes();
             }
         });
@@ -243,41 +245,129 @@ function refreshBasetunes()
     else
     {
         //JSON list of base tunes has been downloaded
+        console.log("Tune list downloaded. Populating filters");
 
-        //Get the display list object
-        var select = document.getElementById('basetunesSelect');
+        //Grab the select elements
+        authorSelect = document.getElementById('basetunesAuthor');
+        makeSelect = document.getElementById('basetunesMake');
+        typeSelect = document.getElementById('basetunesType');
 
-        //Get the currently selected version
-        selectElement = document.getElementById('versionsSelect');
-        if(selectElement.selectedIndex == -1) { return; } //Check for no value being selected
-        var selectedFW = selectElement.options[selectElement.selectedIndex].value;
+        //Clear the current values (There shouldn't be any, but safety first)
+        while(authorSelect.options.length) { authorSelect.remove(0); }
+        while(makeSelect.options.length) { makeSelect.remove(0); }
+        while(typeSelect.options.length) { typeSelect.remove(0); }
 
-        //Clear the current options from the list
-        while(select.options.length)
+        //Manually add the 'All' entries
+        var newOption1 = document.createElement('option');
+        newOption1.innerHTML = "All";
+        var newOption2 = document.createElement('option');
+        newOption2.innerHTML = "All";
+        var newOption3 = document.createElement('option');
+        newOption3.innerHTML = "All";
+        authorSelect.appendChild(newOption1);
+        makeSelect.appendChild(newOption2);
+        typeSelect.appendChild(newOption3);
+
+        //The Types list only has 2 valid values "Stock" or "Modified", so these can be added manually
+        var stockOption = document.createElement('option');
+        var modifiedOption = document.createElement('option');
+        stockOption.innerHTML = "Stock";
+        modifiedOption.innerHTML = "Modified";
+        typeSelect.appendChild(stockOption);
+        typeSelect.appendChild(modifiedOption);
+
+        //Create unique sets with all the options
+        var authorsSet = new Set();
+        var makesSet = new Set();
+        for (var tune in basetuneList)
         {
-            select.remove(0);
+          authorsSet.add(basetuneList[tune].provider);
+          makesSet.add(basetuneList[tune].make);
+        }
+        //Add the options for authors
+        for(let item of authorsSet.values())
+        {
+          var tempOption = document.createElement('option');
+          tempOption.innerHTML = item;
+          authorSelect.appendChild(tempOption);
+        }
+        //Add the options for makes
+        for(let item of makesSet.values())
+        {
+          var tempOption = document.createElement('option');
+          tempOption.innerHTML = item;
+          makeSelect.appendChild(tempOption);
         }
 
-        for (var tune in basetuneList) 
-        {
-            //Check whether the current tune was available for the selected firmware
-            if(parseInt(basetuneList[tune].introduced) <= parseInt(selectedFW))
-            {
-                var url = basetuneList[tune].baseURL.replace("$VERSION", selectedFW) + basetuneList[tune].filename;
-                //console.log("Tune url: " + url);
-                //console.log("Found a valid tune: " + basetuneList[tune].displayName);
-                var newOption = document.createElement('option');
-                newOption.style.background = "#022b3a";
-                newOption.value = url;
-                newOption.innerHTML = basetuneList[tune].displayName;
-                select.appendChild(newOption);
-            }
-            
-        }
-
-        //Finally update the selected firmware label on the basetunes page
-        document.getElementById('basetunesSelectedFW').innerHTML = selectedFW;
+        authorSelect.selectedIndex = 0;
+        makeSelect.selectedIndex = 0;
+        typeSelect.selectedIndex = 0;
+        
+        //Apply the filters to the main list
+        refreshBasetunesFilters()
     }
+}
+
+function refreshBasetunesFilters()
+{
+  //Get the display list object
+  var select = document.getElementById('basetunesSelect');
+
+  //Get the currently selected Author
+  selectElement = document.getElementById('basetunesAuthor');
+  if(selectElement.selectedIndex == -1) { return; } //Check for no value being selected
+  var selectedAuthor = selectElement.options[selectElement.selectedIndex].value;
+
+  //Get the currently selected Make
+  selectElement = document.getElementById('basetunesMake');
+  if(selectElement.selectedIndex == -1) { return; } //Check for no value being selected
+  var selectedMake = selectElement.options[selectElement.selectedIndex].value;
+
+  //Get the currently selected Type
+  selectElement = document.getElementById('basetunesType');
+  if(selectElement.selectedIndex == -1) { return; } //Check for no value being selected
+  var selectedType = selectElement.options[selectElement.selectedIndex].value;
+
+  //Clear the current options from the list
+  while(select.options.length)
+  {
+      select.remove(0);
+  }
+
+  var validTunes = 0;
+  for (var tune in basetuneList) 
+  {
+      //Check whether the current tune meets filters
+      var AuthorBool = selectedAuthor == "All" || basetuneList[tune].provider == selectedAuthor;
+      var MakeBool = selectedMake == "All" || basetuneList[tune].make == selectedMake;
+      var TypeBool = selectedType == "All" || basetuneList[tune].type == selectedType;
+      if(AuthorBool && MakeBool && TypeBool)
+      {
+          //var url = basetuneList[tune].baseURL.replace("$VERSION", selectedFW) + basetuneList[tune].filename;
+          //console.log("Tune url: " + url);
+          //console.log("Found a valid tune: " + basetuneList[tune].displayName);
+          var newOption = document.createElement('option');
+          newOption.style.background = "#022b3a";
+          newOption.dataset.filename = basetuneList[tune].filename;
+          newOption.dataset.make = basetuneList[tune].make;
+          newOption.dataset.description = basetuneList[tune].description;
+          newOption.innerHTML = basetuneList[tune].displayName + " - " + basetuneList[tune].type;
+          select.appendChild(newOption);
+
+          validTunes++;
+      }
+      
+  }
+  console.log("Tunes that met filters: " + validTunes);
+}
+
+function refreshBasetunesDescription()
+{
+  descriptionElement = document.getElementById('tuneDetailsText');
+  //Get the currently selected Tune
+  selectElement = document.getElementById('basetunesSelect');
+  if(selectElement.selectedIndex == -1) { return; } //Check for no value being selected
+  descriptionElement.innerHTML = selectElement.options[selectElement.selectedIndex].dataset.description;
 }
 
 function downloadHex(board)
@@ -303,6 +393,10 @@ function downloadHex(board)
         console.log("Downloading Teensy 41 firmware: " + DLurl);
         break;
       case "ATMEGA2560":
+        DLurl = "http://speeduino.com/fw/bin/" + e.options[e.selectedIndex].value + ".hex";
+        console.log("Downloading AVR firmware: " + DLurl);
+        break;
+      default:
         DLurl = "http://speeduino.com/fw/bin/" + e.options[e.selectedIndex].value + ".hex";
         console.log("Downloading AVR firmware: " + DLurl);
         break;
@@ -334,9 +428,10 @@ function downloadIni()
 function downloadBasetune()
 {
     var basetuneSelect = document.getElementById('basetunesSelect');
-    var version = document.getElementById('versionsSelect');
+    var basetuneOption = basetuneSelect.options[basetuneSelect.selectedIndex];
+    //var version = document.getElementById('versionsSelect');
     //var DLurl = "https://github.com/noisymime/speeduino/raw/" + version + "/reference/Base%20Tunes/" + e.options[e.selectedIndex].value;
-    var DLurl = basetuneSelect.options[basetuneSelect.selectedIndex].value;
+    var DLurl = "https://github.com/speeduino/Tunes/raw/main/" + basetuneOption.dataset.make + "/" + basetuneOption.dataset.filename;
     console.log("Downloading: " + DLurl);
 
     //Download the ini file
@@ -394,7 +489,6 @@ function uploadFW()
             document.getElementById('iniFileText').style.display = "block"
             document.getElementById('iniFileLocation').innerHTML = file
             downloadHex(uploadBoard);
-            //downloadHex(e.options[e.selectedIndex].getAttribute("board"));
         }
         else if(extension == "hex")
         {
@@ -412,7 +506,7 @@ function uploadFW()
             //Begin the upload
             if(uploadBoard.includes("TEENSY"))
             {
-              console.log("Uploadig using Teensy_loader")
+              console.log("Uploading using Teensy_loader")
               ipcRenderer.send("uploadFW_teensy", {
                 port: uploadPort,
                 firmwareFile: file,
@@ -427,7 +521,6 @@ function uploadFW()
               });
             }
         }
-        console.log();
     });
 
     ipcRenderer.on("upload completed", (event, code) => {
@@ -520,7 +613,5 @@ window.onload = function () {
     refreshSerialPorts();
     checkForUpdates();
     
-    usb.on('attach', refreshSerialPorts);
-    usb.on('detach', refreshSerialPorts);
 };
 
