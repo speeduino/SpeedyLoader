@@ -3993,7 +3993,7 @@ input, select, textarea {
 	}
 
 	/* This is the class name given by the Font Awesome component when icon contains 'spinner' */
-	.features section .fa-spinner {
+	section .fa-spinner {
 		/* Apply 'spinner' keyframes looping once every second (1s)  */
 		animation: spin 2s linear infinite;
 		display: inline-block;

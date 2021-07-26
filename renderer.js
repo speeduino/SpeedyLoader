@@ -185,6 +185,11 @@ function refreshAvailableFirmwares()
                 select.appendChild(newOption);
             }
             select.selectedIndex = 0;
+
+            //Remove the loading spinner
+            loadingSpinner = document.getElementById("fwVersionsSpinner");
+            loadingSpinner.style.display = "none";
+
             refreshBasetunes();
 
             //Re-enable the buttons
