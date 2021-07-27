@@ -441,9 +441,14 @@ function downloadIni()
 function showBasetuneWarning()
 {
   let mainWindow = remote.BrowserWindow.getFocusedWindow();
-  warningWindow = new remote.BrowserWindow({ width: 550, height: 330, modal: true, parent: mainWindow, show: false })
+  warningWindow = new remote.BrowserWindow({ width: 550, height: 380, modal: true, parent: mainWindow, show: false })
 
-  warningWindow.loadURL(`file://${__dirname}/warning.html?board=` + "test");
+  var select = document.getElementById('basetunesSelect');
+  selectedTune = select.options[select.selectedIndex];
+  
+
+  board = selectedTune.dataset.board
+  warningWindow.loadURL(`file://${__dirname}/warning.html?board=` + board);
   
   warningWindow.once('ready-to-show', () => {
     warningWindow.show();
@@ -460,23 +465,19 @@ function showBasetuneWarning()
 function downloadBasetune()
 {
   console.log("downloading");
-  let dialogWindow = remote.BrowserWindow.getFocussedWindow(); //Close the warning dialog
-  dialogWindow.close();
   
-    let mainWindow = remote.BrowserWindow.getAllWindows()[0]; //Close the warning dialog
-    mainWindow.focus();
-    var basetuneSelect = document.getElementById('basetunesSelect');
-    var basetuneOption = basetuneSelect.options[basetuneSelect.selectedIndex];
-    //var version = document.getElementById('versionsSelect');
-    //var DLurl = "https://github.com/noisymime/speeduino/raw/" + version + "/reference/Base%20Tunes/" + e.options[e.selectedIndex].value;
-    var DLurl = "https://github.com/speeduino/Tunes/raw/main/" + basetuneOption.dataset.make + "/" + basetuneOption.dataset.filename;
-    console.log("Downloading: " + DLurl);
+  var basetuneSelect = document.getElementById('basetunesSelect');
+  var basetuneOption = basetuneSelect.options[basetuneSelect.selectedIndex];
+  //var version = document.getElementById('versionsSelect');
+  //var DLurl = "https://github.com/noisymime/speeduino/raw/" + version + "/reference/Base%20Tunes/" + e.options[e.selectedIndex].value;
+  var DLurl = "https://github.com/speeduino/Tunes/raw/main/" + basetuneOption.dataset.make + "/" + basetuneOption.dataset.filename;
+  console.log("Downloading: " + DLurl);
 
-    //Download the ini file
-    ipcRenderer.send("download", {
-        url: DLurl,
-        properties: {directory: "downloads"}
-    });
+  //Download the ini file
+  ipcRenderer.send("download", {
+      url: DLurl,
+      properties: {directory: "downloads"}
+  });
 }
 
 //Installing the Windows drivers

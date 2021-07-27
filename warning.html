@@ -4,7 +4,7 @@
   function updateBoard()
   {
     board = (location.search.split('board=')[1]||'').split('&')[0]
-    document.getElementById("tuneBoard").innerHTML = board;
+    document.getElementById("tuneBoard").innerHTML = decodeURI(board);
   }
   </script>
   <body onload="updateBoard()">
@@ -21,7 +21,7 @@
       <div style="padding-left: .9em; padding-right: 0.9em; overflow-y: auto; ">
         <p style="margin-bottom: 5;">Base tunes are intended as a starting point ONLY. They will require changes in order to work correctly with your engine</p>
         <center><span class="icon fa-exclamation major" style="margin: 0; justify-content: center;" id="warningIcon"></span></center>
-        <p >Take note of the board that has been selected in this tune:  <span style="font-weight: bold;" id="tuneBoard"></span></p>
+        <p >Take note of the board that has been used in this tune. If you are not using this board you will to change this setting immediately: <br /><span style="font-weight: bold;" id="tuneBoard"></span></p>
       </div>
 
     
