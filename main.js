@@ -90,7 +90,7 @@ ipcMain.on('download', (e, args) => {
   fullFile = dlDir + "/" + filename;
 
   //Special case for handling the build that is from master. This is ALWAYS downloaded as there's no way of telling when it was last updated. 
-  if(filename == "master.hex" || filename == "master.ini") 
+  if(filename.includes("master")) 
   {
     if(fs.existsSync(fullFile))
     {

@@ -395,18 +395,15 @@ function downloadHex(board)
     var DLurl;
     switch(board) {
       case "TEENSY35":
-        if(e.options[e.selectedIndex].value == 'master') { DLurl = "http://speeduino.com/fw/teensy35/" + e.options[e.selectedIndex].value + ".hex"; }
-        else { DLurl = "http://speeduino.com/fw/teensy35/" + e.options[e.selectedIndex].value + "-teensy35.hex"; }
+        DLurl = "http://speeduino.com/fw/teensy35/" + e.options[e.selectedIndex].value + "-teensy35.hex";
         console.log("Downloading Teensy 35 firmware: " + DLurl);
         break;
       case "TEENSY36":
-        if(e.options[e.selectedIndex].value == 'master') { DLurl = "http://speeduino.com/fw/teensy36/" + e.options[e.selectedIndex].value + ".hex"; }
-        else { DLurl = "http://speeduino.com/fw/teensy36/" + e.options[e.selectedIndex].value + "-teensy36.hex"; }
+        DLurl = "http://speeduino.com/fw/teensy36/" + e.options[e.selectedIndex].value + "-teensy36.hex";
         console.log("Downloading Teensy 36 firmware: " + DLurl);
         break;
       case "TEENSY41":
-        if(e.options[e.selectedIndex].value == 'master') { DLurl = "http://speeduino.com/fw/teensy41/" + e.options[e.selectedIndex].value + ".hex"; }
-        else { DLurl = "http://speeduino.com/fw/teensy41/" + e.options[e.selectedIndex].value + "-teensy41.hex"; }
+        DLurl = "http://speeduino.com/fw/teensy41/" + e.options[e.selectedIndex].value + "-teensy41.hex";
         console.log("Downloading Teensy 41 firmware: " + DLurl);
         break;
       case "ATMEGA2560":
