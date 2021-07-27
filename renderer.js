@@ -242,8 +242,13 @@ function refreshBasetunes()
         request.get(options, function (error, response, body) {
             if (!error ) 
             {
-                basetuneList = JSON5.parse(body);
-                refreshBasetunes();
+              basetuneList = JSON5.parse(body);
+
+              //Remove the loading spinner
+              loadingSpinner = document.getElementById("baseTuneSpinner");
+              loadingSpinner.style.display = "none";
+
+              refreshBasetunes();
             }
         });
     }
@@ -356,6 +361,7 @@ function refreshBasetunesFilters()
           newOption.dataset.filename = basetuneList[tune].filename;
           newOption.dataset.make = basetuneList[tune].make;
           newOption.dataset.description = basetuneList[tune].description;
+          newOption.dataset.board = basetuneList[tune].board;
           newOption.innerHTML = basetuneList[tune].displayName + " - " + basetuneList[tune].type;
           select.appendChild(newOption);
 
@@ -363,6 +369,8 @@ function refreshBasetunesFilters()
       }
       
   }
+  select.selectedIndex = 0;
+  refreshBasetunesDescription()
   console.log("Tunes that met filters: " + validTunes);
 }
 
