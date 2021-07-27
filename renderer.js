@@ -169,7 +169,7 @@ function refreshAvailableFirmwares()
     basetuneButton.disabled = true;
 
     var request = require('request');
-    request.get('http://speeduino.com/fw/versions', {timeout: 10000}, function (error, response, body) 
+    request.get('https://speeduino.com/fw/versions', {timeout: 20000}, function (error, response, body) 
     {
         select = document.getElementById('versionsSelect');
         if (!error && response.statusCode == 200) {
@@ -199,7 +199,7 @@ function refreshAvailableFirmwares()
         }
         else if(error)
         {
-            console.log("Error retrieving available firmwares");
+            console.log("Error retrieving available firmwares: " + error);
             var newOption = document.createElement('option');
             if(error.code === 'ETIMEDOUT')
             {
@@ -212,6 +212,10 @@ function refreshAvailableFirmwares()
                 newOption.innerHTML = "Cannot retrieve firmware list. Check internet connection and restart";
             }
             select.appendChild(newOption);
+
+            //Remove the loading spinner
+            loadingSpinner = document.getElementById("fwVersionsSpinner");
+            loadingSpinner.style.display = "none";
         }
         else if(response.statusCode == 404)
         {
@@ -582,11 +586,17 @@ function uploadFW()
 
     ipcRenderer.on("upload error", (event, code) => {
         statusText.innerHTML = "Upload to Speeduino failed";
+
+        //Hide the donation bar as it makes the terminal go offscreen
+        document.getElementById('sponsor').style.height = 0;
+
         //Mke the terminal/error section visible
         document.getElementById('terminalSection').style.display = "block";
         document.getElementById('terminalText').innerHTML = code;
         spinner.classList.remove('fa-spinner');
         spinner.classList.add('fa-times');
+
+
 
         reinstallButton.disabled = false;
     });
