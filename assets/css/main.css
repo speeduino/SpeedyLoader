@@ -2375,6 +2375,13 @@ input, select, textarea {
 			background: #022b3a;
 		}
 
+    .select5 option {
+			color: #ffffff;
+			background: #022b3a;
+      padding-top: 4px;
+      padding-left: 4px;
+		}
+
     .select1 {
       height: 1.75em;
       width: 12em;
@@ -2732,7 +2739,7 @@ input, select, textarea {
 				width: 100%;
 			}
 
-		@media screen and (max-width: 480px) {
+		@media screen and (max-width: 380px) {
 
 			ul.actions:not(.fixed) {
 				-moz-flex-direction: column;
@@ -2866,6 +2873,15 @@ input, select, textarea {
 			}
 
 		}
+
+/* Modal dialog centering */
+    .modal {
+      padding-left: 8px;
+      padding-right: 8px;
+      display: flex; 
+      justify-content: center;
+      text-align: center;
+    }
 
 /* Section/Article */
 
@@ -3270,10 +3286,16 @@ input, select, textarea {
 
 		.wrapper.style4 {
 			background-color: #022b3a;
+      background-color: #3e4094;
 		}
 
 		.wrapper.style4-alt {
 			background-color: #022b3a;
+		}
+
+    .wrapper.style5 {
+			background-color: #022b3a;
+      background-color: #bd2d2d;
 		}
 
 		.wrapper.fullscreen {

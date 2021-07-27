@@ -14,7 +14,8 @@ var avrdudeIsRunning = false;
 var teensyLoaderIsRunning = false;
 var teensyLoaderErr = ""
 
-function createWindow () {
+function createWindow () 
+{
   // Create the browser window.
   win = new BrowserWindow({
     width: 800,
@@ -55,8 +56,6 @@ function createWindow () {
   require('electron').shell.openExternal(url);
   });
 }
-
-
 
 //Required for newer versions of Electron to work with serialport
 app.allowRendererProcessReuse = false

@@ -1,0 +1,35 @@
+<html>
+  <link rel="stylesheet" href="assets/css/main.css" />
+  <script>
+  function updateBoard()
+  {
+    board = (location.search.split('board=')[1]||'').split('&')[0]
+    document.getElementById("tuneBoard").innerHTML = board;
+  }
+  </script>
+  <body onload="updateBoard()">
+
+    <!-- Choose Version -->
+ <section id="loader" class="wrapper style5 fullscreen fade-up" style="padding: 0; margin: 0;">
+ 
+  <!--<h1>Firmware Loader</h1>-->
+  <div class="inner" style="padding: 0; margin: 0;">
+    <p><h1 class="modal" style="margin: 0;">WARNING</h1></p>
+  </div>
+  <div class="features major modal" style="margin-left: 15px; margin-right: 15px; padding-top: 1; padding-bottom: 1; margin-bottom: 8px;">
+    
+      <div style="padding-left: .9em; padding-right: 0.9em; overflow-y: auto; ">
+        <p style="margin-bottom: 5;">Base tunes are intended as a starting point ONLY. They will require changes in order to work correctly with your engine</p>
+        <center><span class="icon fa-exclamation major" style="margin: 0; justify-content: center;" id="warningIcon"></span></center>
+        <p >Take note of the board that has been selected in this tune:  <span style="font-weight: bold;" id="tuneBoard"></span></p>
+      </div>
+
+    
+  </div>
+  <ul class="actions modal">
+    <li><input type='button' id="btnDownloadConfirm" value="Download"  onclick="window.close();" /></li>
+</ul>
+  </section>
+
+  </body>
+</html>

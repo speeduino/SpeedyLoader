@@ -430,8 +430,33 @@ function downloadIni()
 
 }
 
+function showBasetuneWarning()
+{
+  let mainWindow = remote.BrowserWindow.getFocusedWindow();
+  warningWindow = new remote.BrowserWindow({ width: 550, height: 330, modal: true, parent: mainWindow, show: false })
+
+  warningWindow.loadURL(`file://${__dirname}/warning.html?board=` + "test");
+  
+  warningWindow.once('ready-to-show', () => {
+    warningWindow.show();
+  })
+
+  warningWindow.on('close', () => {
+    warningWindow = null;
+    downloadBasetune();
+  });
+
+
+}
+
 function downloadBasetune()
 {
+  console.log("downloading");
+  let dialogWindow = remote.BrowserWindow.getFocussedWindow(); //Close the warning dialog
+  dialogWindow.close();
+  
+    let mainWindow = remote.BrowserWindow.getAllWindows()[0]; //Close the warning dialog
+    mainWindow.focus();
     var basetuneSelect = document.getElementById('basetunesSelect');
     var basetuneOption = basetuneSelect.options[basetuneSelect.selectedIndex];
     //var version = document.getElementById('versionsSelect');
