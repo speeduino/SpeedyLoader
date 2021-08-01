@@ -447,6 +447,14 @@ function showBasetuneWarning()
   var select = document.getElementById('basetunesSelect');
   selectedTune = select.options[select.selectedIndex];
   
+  // auto hide menu bar (Win, Linux)
+  warningWindow.setMenuBarVisibility(false);
+  warningWindow.setAutoHideMenuBar(true);
+
+  // remove completely when app is packaged (Win, Linux)
+  if (remote.app.isPackaged) {
+    warningWindow.removeMenu();
+  }
 
   board = selectedTune.dataset.board
   warningWindow.loadURL(`file://${__dirname}/warning.html?board=` + board);
