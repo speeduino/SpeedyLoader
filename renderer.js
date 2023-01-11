@@ -625,8 +625,12 @@ function quit()
     w.close();
 }
 
-function checkForUpdates()
+async function checkForUpdates()
 {
+    //Adds the current version number to the Titlebar
+    let current_version = await ipcRenderer.invoke("getAppVersion");
+    document.getElementById('title').innerHTML = "Speeduino Universal Firmware Loader (v" + current_version + ")"
+
     var url = "https://api.github.com/repos/speeduino/SpeedyLoader/releases/latest";
 
     //document.getElementById('detailsHeading').innerHTML = version;
@@ -659,9 +663,6 @@ function checkForUpdates()
 }
 
 window.onload = function () {
-    //Adds the current version number to the Titlebar
-    document.getElementById('title').innerHTML = "Speeduino Universal Firmware Loader (v" + remote.app.getVersion() + ")"
-    
     refreshAvailableFirmwares();
     refreshBasetunes();
     refreshSerialPorts();

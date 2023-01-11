@@ -306,3 +306,7 @@ ipcMain.on('uploadFW', (e, args) => {
     }
   });
 });
+
+ipcMain.handle('getAppVersion', async (e) => {
+  return app.getVersion();
+});
