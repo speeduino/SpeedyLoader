@@ -1,4 +1,4 @@
-const serialport = require('serialport')
+const serialport = require('@serialport/bindings-cpp')
 const usb = require('usb')
 const JSON5 = require('json5')
 const {ipcRenderer} = require("electron")
@@ -39,7 +39,7 @@ function getTeensyVersion(id)
 
 function refreshSerialPorts()
 {
-  serialport.list().then(ports => {
+  serialport.autoDetect().list().then(ports => {
     console.log('Serial ports found: ', ports);
   
     if (ports.length === 0) {
