@@ -651,7 +651,7 @@ async function checkForUpdates()
             console.log("Latest version: " + latest_version);
 
             var semver = require('semver');
-            if(semver.gt(latest_version, remote.app.getVersion()))
+            if(semver.gt(latest_version, current_version))
             {
                 //New version has been found
                 document.getElementById('update_url').setAttribute("href", result.html_url);
