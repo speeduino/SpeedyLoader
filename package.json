@@ -1,5 +1,5 @@
 {
-  "name": "SpeedyLoader",
+  "name": "speedyloader",
   "version": "1.5.1",
   "description": "Speeduino universal firmware loader",
   "main": "main.js",
