@@ -19,10 +19,6 @@
 			xsmall:   [ null,      '480px'  ]
 		});*/
 
-	// Hack: Enable IE flexbox workarounds.
-		if (browser.name == 'ie')
-			$body.addClass('is-ie');
-
 	// Play initial animations on page load.
 		$window.on('load', function() {
 			window.setTimeout(function() {
