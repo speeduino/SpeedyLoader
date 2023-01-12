@@ -148,7 +148,7 @@ function refreshDetails()
 
             //Need to convert the Markdown that comes from Github to HTML
             var myMarked = require('marked');
-            textField.innerHTML = myMarked(result.body);
+            textField.innerHTML = myMarked.parse(result.body);
         }
     });
 
