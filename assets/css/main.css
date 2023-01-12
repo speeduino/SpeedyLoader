@@ -3221,39 +3221,19 @@ input, select, textarea {
 
 /* Wrapper */
 
+	div.wrapper {
+		padding-top: 3.5em;
+	}
+
 	.wrapper {
 		position: relative;
 	}
 
 		.wrapper > .inner {
-			padding: 5em 5em 3em 5em ;
+			padding: 1em 3em;
 			max-width: 100%;
 			width: 75em;
 		}
-
-			@media screen and (max-width: 1680px) {
-
-				.wrapper > .inner {
-					padding: 4em 4em 2em 4em ;
-				}
-
-			}
-
-			@media screen and (max-width: 1280px) {
-
-				.wrapper > .inner {
-					width: 100%;
-				}
-
-			}
-
-			@media screen and (max-width: 736px) {
-
-				.wrapper > .inner {
-					padding: 3em 2em 1em 2em ;
-				}
-
-			}
 
 		.wrapper.alt {
 			background-color: #261c3e;
