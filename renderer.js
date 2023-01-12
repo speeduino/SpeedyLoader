@@ -357,7 +357,6 @@ function refreshBasetunesFilters()
           //console.log("Tune url: " + url);
           //console.log("Found a valid tune: " + basetuneList[tune].displayName);
           var newOption = document.createElement('option');
-          newOption.style.background = "#022b3a";
           newOption.dataset.filename = basetuneList[tune].filename;
           newOption.dataset.make = basetuneList[tune].make;
           newOption.dataset.description = basetuneList[tune].description;
