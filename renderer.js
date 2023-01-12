@@ -152,10 +152,6 @@ function refreshDetails()
         }
     });
 
-    //Finally, make the details section visible
-    document.getElementById('details').style.display = "inline";
-    //And jump to it
-    window.location.href = "#details";
 }
 
 function refreshAvailableFirmwares()
@@ -499,8 +495,6 @@ function installDrivers()
 
 function uploadFW()
 {
-    //Jump to the progress section
-    window.location.href = "#progress";
 
     //Start the spinner
     var spinner = document.getElementById('progressSpinner');

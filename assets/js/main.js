@@ -184,19 +184,37 @@
 			});
 
 	// Button handlers
-	$(document).on('click', '#btnChoosePort', function(event) { 
-		event.preventDefault(); 
-		$("[href='#port']").trigger('click'); 
+	$(document).on('click', '#btnChoosePort', function(event) {
+		event.preventDefault();
+		$("[href='#port']").trigger('click');
 	});
 
-	$(document).on('click', '#btnBasetune', function(event) { 
-		event.preventDefault(); 
-		$("[href='#basetunes']").trigger('click'); 
+	$(document).on('click', '#btnBasetune', function(event) {
+		event.preventDefault();
+		$("[href='#basetunes']").trigger('click');
 	});
 
-	$(document).on('click', '#btnLoader', function(event) { 
-		event.preventDefault(); 
-		$("[href='#loader']").trigger('click'); 
+	$(document).on('click', '#btnLoader', function(event) {
+		event.preventDefault();
+		$("[href='#loader']").trigger('click');
+	});
+
+	$(document).on('click', '#btnDetails', function(event) {
+		event.preventDefault();
+		refreshDetails();
+		$("[href='#details']").trigger('click');
+	});
+
+	$(document).on('click', '#btnInstall', function(event) {
+		event.preventDefault();
+		$("[href='#progress']").trigger('click');
+		uploadFW();
+	});
+
+	$(document).on('click', '#btnReinstall', function(event) {
+		event.preventDefault();
+		$("[href='#progress']").trigger('click');
+		uploadFW();
 	});
 
 })(jQuery);
