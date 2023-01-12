@@ -3866,14 +3866,6 @@ input, select, textarea {
 
 		}
 
-		@media screen and (max-width: 736px) {
-
-			#sidebar {
-				display: none;
-			}
-
-    }
-    
 /* Sponsor bar */
 #sponsor {
   padding: 2.5em 2.5em 0.5em 2.5em ;
