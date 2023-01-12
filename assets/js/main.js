@@ -183,4 +183,20 @@
 				}
 			});
 
+	// Button handlers
+	$(document).on('click', '#btnChoosePort', function(event) { 
+		event.preventDefault(); 
+		$("[href='#port']").trigger('click'); 
+	});
+
+	$(document).on('click', '#btnBasetune', function(event) { 
+		event.preventDefault(); 
+		$("[href='#basetunes']").trigger('click'); 
+	});
+
+	$(document).on('click', '#btnLoader', function(event) { 
+		event.preventDefault(); 
+		$("[href='#loader']").trigger('click'); 
+	});
+
 })(jQuery);

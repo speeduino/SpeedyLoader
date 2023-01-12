@@ -21,6 +21,7 @@
   <nav>
   <ul>
   <li><a href="#loader">Choose Firmware</a></li>
+  <li style="display: none;"><a href="#details">Firmware Details</a></li>
   <li><a href="#port">Choose Port</a></li>
   <li><a href="#progress">Progress</a></li>
   <li><a href="#basetunes">Base Tunes</a></li>
@@ -43,12 +44,12 @@
     <span class="icon fa-spinner" style="position: absolute; left: 48%; top: 42%;" id="fwVersionsSpinner"></span>
     <select name="firmwares" class="select" id="versionsSelect" size="10" width="20" onClick="refreshBasetunes();"></select>
     <ul class="actions">
-        <li><input type='button' id="btnChoosePort" value="Choose Port" onclick="window.location.href='#port';" /></li>
+        <li><input type='button' id="btnChoosePort" value="Choose Port" /></li>
     </ul>
     <p>Other actions:</p>
     <ul class="actions">
         <li><input type='button' id="btnDetails" value="View Firmware Notes" onclick="refreshDetails();" /></li>
-        <li><input type='button' value="Get Base Tune" id="btnBasetune" onclick="window.location.href='#basetunes';" /></li> 
+        <li><input type='button' value="Get Base Tune" id="btnBasetune" /></li> 
     </ul>
  </p>
  <div id="error"></div>
@@ -66,9 +67,9 @@
         <div id="detailsText" style="padding-left: 0.9em; padding-right: 0.9em; overflow-y: auto; height: 50vh;"></div>
     </div>
     <ul class="actions">
-        <li><input type='button' value="Get Base Tune" id="btnBasetune" onclick="window.location.href='#basetunes';" /></li> 
-        <li><input type='button' id="btnDetails" value="Change Version" onclick="window.location.href='#loader';" /></li>
-        <li><input type='button' id="btnChoosePort" value="Install" onclick="window.location.href='#port';" /></li>
+        <li><input type='button' value="Get Base Tune" id="btnBasetune" /></li> 
+        <li><input type='button' id="btnLoader" value="Change Version" /></li>
+        <li><input type='button' id="btnChoosePort" value="Install" /></li>
     </ul>
 </div>
 </section>
@@ -116,9 +117,9 @@
         </section>
     </div>
     <ul class="actions">
-        <li><input type='button' id="btnChoosePort" value="Choose Port" onclick="window.location.href='#port';" /></li> 
+        <li><input type='button' id="btnChoosePort" value="Choose Port" /></li> 
         <li><input type='button' value="Burn again" id="btnReinstall" onclick="uploadFW();" /></li>
-        <li><input type='button' value="Get Base Tune" id="btnBasetune" onclick="window.location.href='#basetunes';" /></li> 
+        <li><input type='button' value="Get Base Tune" id="btnBasetune" /></li> 
     </ul>
     <ul class="actions">
         <li><input type='button' value="Exit" id="btnExit" onclick="quit();" /></li>   
