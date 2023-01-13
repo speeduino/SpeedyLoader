@@ -46,7 +46,7 @@ function refreshSerialPorts()
       document.getElementById('serialDetectError').textContent = 'No ports discovered'
     }
   
-    select = document.getElementById('portsSelect');
+    const select = document.getElementById('portsSelect');
 
     //Clear the current options
     while (select.options.length)
@@ -127,29 +127,26 @@ function refreshDetails()
     var version = selectElement.options[selectElement.selectedIndex].value;
     var url = "https://api.github.com/repos/noisymime/speeduino/releases/tags/" + version;
 
+    document.getElementById('detailsText').innerHTML = "";
     document.getElementById('detailsHeading').innerHTML = version;
     
-    var request = require('request');
-    const options = {
-        url: url,
-        headers: {
-          'User-Agent': 'request'
+    fetch(url)
+    .then((response) => {
+        if (response.ok) {
+            return response.json();
         }
-      };
+        return Promise.reject(response);
+    })
+    .then((result) => {
+        console.log(result);
 
-    request.get(options, function (error, response, body) {
-        if (!error ) {
-
-            console.log(body);
-            var result = JSON.parse(body);
-            
-            // Continue with your processing here.
-            textField = document.getElementById('detailsText');
-
-            //Need to convert the Markdown that comes from Github to HTML
-            var myMarked = require('marked');
-            textField.innerHTML = myMarked.parse(result.body);
-        }
+        //Need to convert the Markdown that comes from Github to HTML
+        var myMarked = require('marked');
+        document.getElementById('detailsText').innerHTML = myMarked.parse(result.body);
+        document.getElementById('detailsHeading').innerHTML = version + " - " + result.name;
+    })
+    .catch((error) => {
+        console.log('Could not download details.', error);
     });
 
 }
@@ -164,61 +161,61 @@ function refreshAvailableFirmwares()
     ChoosePortButton.disabled = true;
     basetuneButton.disabled = true;
 
-    var request = require('request');
-    request.get('https://speeduino.com/fw/versions', {timeout: 20000}, function (error, response, body) 
-    {
-        select = document.getElementById('versionsSelect');
-        if (!error && response.statusCode == 200) {
+    const select = document.getElementById('versionsSelect');
 
-            var lines = body.split('\n');
-            // Continue with your processing here.
-            
-            for(var i = 0;i < lines.length;i++)
-            {
-                var newOption = document.createElement('option');
-                newOption.value = lines[i];
-                newOption.innerHTML = lines[i];
-                select.appendChild(newOption);
-            }
-            select.selectedIndex = 0;
-
-            //Remove the loading spinner
-            loadingSpinner = document.getElementById("fwVersionsSpinner");
-            loadingSpinner.style.display = "none";
-
-            refreshBasetunes();
-
-            //Re-enable the buttons
-            DetailsButton.disabled = false;
-            ChoosePortButton.disabled = false;
-            basetuneButton.disabled = false;
+    fetch('https://speeduino.com/fw/versions', { signal: AbortSignal.timeout(5000) } )
+    .then((response) => {
+        if (response.ok) {
+            return response.text();
         }
-        else if(error)
+        return Promise.reject(response);
+    })
+    .then((result) => {
+        var lines = result.split('\n');
+        // Continue with your processing here.
+        
+        for(var i = 0;i < lines.length;i++)
         {
-            console.log("Error retrieving available firmwares: " + error);
             var newOption = document.createElement('option');
-            if(error.code === 'ETIMEDOUT')
-            {
-                newOption.value = "Connection timed out";
-                newOption.innerHTML = "Connection timed out";
-            }
-            else
-            {
-                newOption.value = "Cannot retrieve firmware list";
-                newOption.innerHTML = "Cannot retrieve firmware list. Check internet connection and restart";
-            }
+            newOption.value = lines[i];
+            newOption.innerHTML = lines[i];
             select.appendChild(newOption);
-
-            //Remove the loading spinner
-            loadingSpinner = document.getElementById("fwVersionsSpinner");
-            loadingSpinner.style.display = "none";
         }
-        else if(response.statusCode == 404)
+        select.selectedIndex = 0;
+
+        //Remove the loading spinner
+        loadingSpinner = document.getElementById("fwVersionsSpinner");
+        loadingSpinner.style.display = "none";
+
+        refreshBasetunes();
+
+        //Re-enable the buttons
+        DetailsButton.disabled = false;
+        ChoosePortButton.disabled = false;
+        basetuneButton.disabled = false;
+
+    })
+    .catch((error) => {
+        console.log("Error retrieving available firmwares. ", error);
+
+        var newOption = document.createElement('option');
+        if(error.code === 'ETIMEDOUT')
         {
-
+            newOption.value = "Connection timed out";
+            newOption.innerHTML = "Connection timed out";
         }
-    }
-    );
+        else
+        {
+            newOption.value = "Cannot retrieve firmware list";
+            newOption.innerHTML = "Cannot retrieve firmware list. Check internet connection and restart";
+        }
+        select.appendChild(newOption);
+
+        //Remove the loading spinner
+        loadingSpinner = document.getElementById("fwVersionsSpinner");
+        loadingSpinner.style.display = "none";
+    });
+
 }
 
 function refreshBasetunes()
@@ -321,7 +318,7 @@ function refreshBasetunes()
 function refreshBasetunesFilters()
 {
   //Get the display list object
-  var select = document.getElementById('basetunesSelect');
+  const select = document.getElementById('basetunesSelect');
 
   //Get the currently selected Author
   selectElement = document.getElementById('basetunesAuthor');

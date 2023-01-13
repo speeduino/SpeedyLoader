@@ -221,8 +221,8 @@
 		event.preventDefault();
 		$("[href='#basetunewarning']").trigger('click');
 
-		var select = document.getElementById('basetunesSelect');
-		let selectedTune = select.options[select.selectedIndex];
+		const select = document.getElementById('basetunesSelect');
+		const selectedTune = select.options[select.selectedIndex];
 		document.getElementById("tuneBoard").innerHTML = selectedTune.dataset.board;
 	});
 
