@@ -634,3 +634,11 @@ window.onload = function () {
     
 };
 
+window.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('btnExit').addEventListener('click', () => {
+      ipcRenderer.invoke('quit-app');
+  });
+  document.getElementById('btnExit2').addEventListener('click', () => {
+      ipcRenderer.invoke('quit-app');
+  });
+});
