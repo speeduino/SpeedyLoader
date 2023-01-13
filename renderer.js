@@ -237,7 +237,6 @@ function refreshBasetunes()
         .then((result) => {
 
             basetuneList = result;
-            console.log(result);
 
             //Remove the loading spinner
             loadingSpinner = document.getElementById("baseTuneSpinner");
@@ -605,7 +604,7 @@ async function checkForUpdates()
         return Promise.reject(response);
     })
     .then((result) => {
-        
+
         latest_version = result.tag_name.substring(1);
         console.log("Latest version: " + latest_version);
 
