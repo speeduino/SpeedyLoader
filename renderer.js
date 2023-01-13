@@ -630,11 +630,50 @@ window.onload = function () {
     
 };
 
-window.addEventListener('DOMContentLoaded', () => {
-  document.getElementById('btnExit').addEventListener('click', () => {
-      ipcRenderer.invoke('quit-app');
-  });
-  document.getElementById('btnExit2').addEventListener('click', () => {
-      ipcRenderer.invoke('quit-app');
-  });
-});
+$(function(){
+
+	// Button handlers
+	$(document).on('click', '#btnChoosePort', function(event) {
+		$("[href='#port']").trigger('click');
+	});
+
+	$(document).on('click', '#btnBasetune', function(event) {
+		$("[href='#basetunes']").trigger('click');
+	});
+
+	$(document).on('click', '#btnLoader', function(event) {
+		$("[href='#loader']").trigger('click');
+	});
+
+	$(document).on('click', '#btnDetails', function(event) {
+		refreshDetails();
+		$("[href='#details']").trigger('click');
+	});
+
+	$(document).on('click', '#btnInstall', function(event) {
+		$("[href='#progress']").trigger('click');
+		uploadFW();
+	});
+
+	$(document).on('click', '#btnReinstall', function(event) {
+		$("[href='#progress']").trigger('click');
+		uploadFW();
+	});
+
+	$(document).on('click', '#btnDownloadBasetune', function(event) {
+		const select = document.getElementById('basetunesSelect');
+		const selectedTune = select.options[select.selectedIndex];
+		document.getElementById("tuneBoard").innerHTML = selectedTune.dataset.board;
+
+		$("[href='#basetunewarning']").trigger('click');
+	});
+
+	$(document).on('click', '#btnDownloadCancel', function(event) {
+		$("[href='#basetunes']").trigger('click');
+	});
+
+	$(document).on('click', '#btnExit', function(event) {
+		ipcRenderer.invoke('quit-app');
+	});
+
+}); 
