@@ -434,38 +434,6 @@ function downloadIni()
 
 }
 
-function showBasetuneWarning()
-{
-  let mainWindow = remote.BrowserWindow.getFocusedWindow();
-  warningWindow = new remote.BrowserWindow({ width: 550, height: 380, modal: true, parent: mainWindow, show: false })
-
-  var select = document.getElementById('basetunesSelect');
-  selectedTune = select.options[select.selectedIndex];
-  
-  // auto hide menu bar (Win, Linux)
-  warningWindow.setMenuBarVisibility(false);
-  warningWindow.setAutoHideMenuBar(true);
-
-  // remove completely when app is packaged (Win, Linux)
-  if (remote.app.isPackaged) {
-    warningWindow.removeMenu();
-  }
-
-  board = selectedTune.dataset.board
-  warningWindow.loadURL(`file://${__dirname}/warning.html?board=` + board);
-  
-  warningWindow.once('ready-to-show', () => {
-    warningWindow.show();
-  })
-
-  warningWindow.on('close', () => {
-    warningWindow = null;
-    downloadBasetune();
-  });
-
-
-}
-
 function downloadBasetune()
 {
   console.log("downloading");
@@ -482,6 +450,9 @@ function downloadBasetune()
       url: DLurl,
       properties: {directory: "downloads"}
   });
+
+  const baseTuneLink = document.querySelectorAll('a[href="#basetunes"]');
+  baseTuneLink[0].click();
 }
 
 //Installing the Windows drivers

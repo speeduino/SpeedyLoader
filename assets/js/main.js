@@ -217,4 +217,18 @@
 		uploadFW();
 	});
 
+	$(document).on('click', '#btnDownloadBasetune', function(event) {
+		event.preventDefault();
+		$("[href='#basetunewarning']").trigger('click');
+
+		var select = document.getElementById('basetunesSelect');
+		let selectedTune = select.options[select.selectedIndex];
+		document.getElementById("tuneBoard").innerHTML = selectedTune.dataset.board;
+	});
+
+	$(document).on('click', '#btnDownloadCancel', function(event) {
+		event.preventDefault();
+		$("[href='#basetunes']").trigger('click');
+	});
+
 })(jQuery);
