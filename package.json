@@ -24,15 +24,16 @@
   },
   "homepage": "https://github.com/speeduino/SpeedyLoader",
   "devDependencies": {
+    "@electron/rebuild": "^3.2.10",
     "electron": "^22.0.1",
-    "electron-packager": "^17.1.1",
-    "@electron/rebuild": "^3.2.10"
+    "electron-packager": "^17.1.1"
   },
   "dependencies": {
+    "@serialport/bindings-cpp": "^10.8.0",
     "electron-dl": "^3.5.0",
+    "jquery": "^3.6.3",
     "marked": "^4.2.5",
     "semver": "^7.3.8",
-    "@serialport/bindings-cpp": "^10.8.0",
     "usb": "^2.6.0"
   },
   "build": {
