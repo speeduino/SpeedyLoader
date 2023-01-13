@@ -1,6 +1,6 @@
 {
   "name": "speedyloader",
-  "version": "1.5.1",
+  "version": "1.5.0",
   "description": "Speeduino universal firmware loader",
   "main": "main.js",
   "scripts": {
@@ -30,7 +30,6 @@
   },
   "dependencies": {
     "electron-dl": "^3.5.0",
-    "json5": "^2.2.3",
     "marked": "^4.2.5",
     "semver": "^7.3.8",
     "@serialport/bindings-cpp": "^10.8.0",

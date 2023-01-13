@@ -1,6 +1,5 @@
 const serialport = require('@serialport/bindings-cpp')
 const usb = require('usb')
-const JSON5 = require('json5')
 const {ipcRenderer} = require("electron")
 const {remote} = require('electron')
 const { shell } = require('electron')
@@ -228,26 +227,28 @@ function refreshBasetunes()
         //var url = "https://speeduino.com/fw/basetunes.json";
         var url = "https://github.com/speeduino/Tunes/raw/main/index.json";
         
-        var request = require('request');
-        const options = {
-            url: url,
-            headers: {
-            'User-Agent': 'request'
+        fetch(url)
+        .then((response) => {
+            if (response.ok) {
+                return response.json();
             }
-        };
+            return Promise.reject(response);
+        })
+        .then((result) => {
 
-        request.get(options, function (error, response, body) {
-            if (!error ) 
-            {
-              basetuneList = JSON5.parse(body);
+            basetuneList = result;
+            console.log(result);
 
-              //Remove the loading spinner
-              loadingSpinner = document.getElementById("baseTuneSpinner");
-              loadingSpinner.style.display = "none";
+            //Remove the loading spinner
+            loadingSpinner = document.getElementById("baseTuneSpinner");
+            loadingSpinner.style.display = "none";
 
-              refreshBasetunes();
-            }
+            refreshBasetunes();
+        })
+        .catch((error) => {
+            console.log('Could not download base tune list.', error);
         });
+
     }
     else
     {
@@ -595,30 +596,29 @@ async function checkForUpdates()
     var url = "https://api.github.com/repos/speeduino/SpeedyLoader/releases/latest";
 
     //document.getElementById('detailsHeading').innerHTML = version;
-    
-    var request = require('request');
-    const options = {
-        url: url,
-        headers: {
-          'User-Agent': 'request'
-        }
-      };
 
-    request.get(options, function (error, response, body) {
-        if (!error ) 
+    fetch(url)
+    .then((response) => {
+        if (response.ok) {
+            return response.json();
+        }
+        return Promise.reject(response);
+    })
+    .then((result) => {
+        
+        latest_version = result.tag_name.substring(1);
+        console.log("Latest version: " + latest_version);
+
+        var semver = require('semver');
+        if(semver.gt(latest_version, current_version))
         {
-            var result = JSON.parse(body);
-            latest_version = result.tag_name.substring(1);
-            console.log("Latest version: " + latest_version);
-
-            var semver = require('semver');
-            if(semver.gt(latest_version, current_version))
-            {
-                //New version has been found
-                document.getElementById('update_url').setAttribute("href", result.html_url);
-                document.getElementById('update_text').style.display = "block";
-            }
+            //New version has been found
+            document.getElementById('update_url').setAttribute("href", result.html_url);
+            document.getElementById('update_text').style.display = "block";
         }
+    })
+    .catch((error) => {
+        console.log('Could not get latest version.', error);
     });
 
 }
