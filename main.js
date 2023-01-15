@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, shell } = require('electron')
 const {download} = require('electron-dl')
 const {execFile} = require('child_process');
 const fs = require('fs');
@@ -29,7 +29,7 @@ function createWindow ()
   // Open links in external browser
   win.webContents.setWindowOpenHandler(({ url }) => {
     if (url.startsWith('https:')) {
-      require('electron').shell.openExternal(url);
+      shell.openExternal(url);
     }
     return { action: 'deny' };
   });
@@ -57,11 +57,6 @@ function createWindow ()
     win = null
   })
 
-  //This forces any links that have a target of _blank to open in a browser rather than Electron window
-  win.webContents.on('new-window', function(e, url) {
-  e.preventDefault();
-  require('electron').shell.openExternal(url);
-  });
 }
 
 //Required for newer versions of Electron to work with serialport
@@ -94,7 +89,8 @@ app.on('activate', () => {
 ipcMain.on('download', (e, args) => {
   filename = args.url.substring(args.url.lastIndexOf('/')+1);
   dlDir = app.getPath('downloads');
-  fullFile = dlDir + "/" + filename;
+  const path = require('node:path');
+  fullFile = path.join(dlDir, filename);
 
   //Special case for handling the build that is from master. This is ALWAYS downloaded as there's no way of telling when it was last updated. 
   if(filename.includes("master")) 
@@ -318,4 +314,11 @@ ipcMain.handle('getAppVersion', async (e) => {
 
 ipcMain.handle('quit-app', () => {
   app.quit();
+});
+
+ipcMain.handle('show-ini', (event, location) => {
+  if (location.endsWith('.ini'))
+  {
+      shell.showItemInFolder(location); // This function needs to be executed in main.js to bring file explorer to foreground
+  }
 });

@@ -569,16 +569,6 @@ function uploadFW()
 
 }
 
-//Opens a native file manager window at the location of the downloaded ini file
-function openFileMgr()
-{
-    var location = document.getElementById('iniFileLocation').innerHTML
-    if (location != "")
-    {
-        shell.showItemInFolder(location);
-    } 
-}
-
 async function checkForUpdates()
 {
     //Adds the current version number to the Titlebar
@@ -667,6 +657,14 @@ $(function(){
 
 	$(document).on('click', '#btnExit', function(event) {
 		ipcRenderer.invoke('quit-app');
+	});
+
+	$(document).on('click', '#iniFileLink', function(event) {
+    var location = document.getElementById('iniFileLocation').innerHTML
+    if (location != "")
+    {
+      ipcRenderer.invoke('show-ini', location);
+    }
 	});
 
 }); 
