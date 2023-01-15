@@ -509,7 +509,7 @@ function uploadFW()
             console.log("Using port: " + uploadPort);
 
             //Show the sponsor banner
-            document.getElementById('sponsor').style.height = "7em"
+            document.getElementById('sponsorbox').style.display = "block"
 
             //Begin the upload
             if(uploadBoard.includes("TEENSY"))
@@ -553,7 +553,7 @@ function uploadFW()
         statusText.innerHTML = "Upload to Speeduino failed";
 
         //Hide the donation bar as it makes the terminal go offscreen
-        document.getElementById('sponsor').style.height = 0;
+        document.getElementById('sponsorbox').style.display = "none"
 
         //Mke the terminal/error section visible
         document.getElementById('terminalSection').style.display = "block";
