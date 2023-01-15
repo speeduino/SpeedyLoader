@@ -1,6 +1,5 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const {download} = require('electron-dl')
-const {spawn} = require('child_process');
 const {execFile} = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -179,7 +178,6 @@ ipcMain.on('uploadFW', (e, args) => {
   var execArgs = ['-v', '-patmega2560', '-C', configName, '-cwiring', '-b 115200', '-P', args.port, '-D', '-U', hexFile];
 
   console.log(executableName);
-  //const child = spawn(executableName, execArgs);
   const child = execFile(executableName, execArgs);
 
   child.stdout.on('data', (data) => {
