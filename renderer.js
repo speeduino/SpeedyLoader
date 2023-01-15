@@ -1,7 +1,6 @@
 const serialport = require('@serialport/bindings-cpp')
 const usb = require('usb')
 const {ipcRenderer} = require("electron")
-const {remote} = require('electron')
 const { shell } = require('electron')
 
 var basetuneList = [];
@@ -578,12 +577,6 @@ function openFileMgr()
     {
         shell.showItemInFolder(location);
     } 
-}
-
-function quit()
-{
-    let w = remote.getCurrentWindow();
-    w.close();
 }
 
 async function checkForUpdates()
