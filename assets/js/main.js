@@ -19,10 +19,6 @@
 			xsmall:   [ null,      '480px'  ]
 		});
 
-	// Hack: Enable IE flexbox workarounds.
-		if (browser.name == 'ie')
-			$body.addClass('is-ie');
-
 	// Play initial animations on page load.
 		$window.on('load', function() {
 			window.setTimeout(function() {
@@ -115,7 +111,7 @@
 
 	// Scrolly.
 		$('.scrolly').scrolly({
-			speed: 1000,
+			speed: 200,
 			offset: function() {
 
 				// If <=large, >small, and sidebar is present, use its height as the offset.

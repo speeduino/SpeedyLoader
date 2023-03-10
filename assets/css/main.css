@@ -2346,12 +2346,7 @@ input, select, textarea {
 		}
 
     select {
-      background-image: url("data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40' preserveAspectRatio='none' viewBox='0 0 40 40'%3E%3Cpath d='M9.4,12.3l10.4,10.4l10.4-10.4c0.2-0.2,0.5-0.4,0.9-0.4c0.3,0,0.6,0.1,0.9,0.4l3.3,3.3c0.2,0.2,0.4,0.5,0.4,0.9 c0,0.4-0.1,0.6-0.4,0.9L20.7,31.9c-0.2,0.2-0.5,0.4-0.9,0.4c-0.3,0-0.6-0.1-0.9-0.4L4.3,17.3c-0.2-0.2-0.4-0.5-0.4-0.9 c0-0.4,0.1-0.6,0.4-0.9l3.3-3.3c0.2-0.2,0.5-0.4,0.9-0.4S9.1,12.1,9.4,12.3z' fill='rgba(255, 255, 255, 0.15)' /%3E%3C/svg%3E");
-      background-size: 1.25rem;
-      background-repeat: no-repeat;
-      background-position: calc(100% - 1rem) center;
       height: 20.75em;
-      padding-right: 2.75em;
       padding-top: 0.75em;
       padding-bottom: 0.75em;
       text-overflow: ellipsis;
@@ -2359,7 +2354,7 @@ input, select, textarea {
 
 		select option {
 			color: #ffffff;
-			background: #312450;
+			background: none;
 		}
 
 		select:focus::-ms-value {
@@ -2373,13 +2368,6 @@ input, select, textarea {
 		select4 option {
 			color: #ffffff;
 			background: #022b3a;
-		}
-
-    .select5 option {
-			color: #ffffff;
-			background: #022b3a;
-      padding-top: 4px;
-      padding-left: 4px;
 		}
 
     .select1 {
@@ -3221,39 +3209,19 @@ input, select, textarea {
 
 /* Wrapper */
 
+	div.wrapper {
+		padding-top: 3.5em;
+	}
+
 	.wrapper {
 		position: relative;
 	}
 
 		.wrapper > .inner {
-			padding: 5em 5em 3em 5em ;
+			padding: 1em 3em;
 			max-width: 100%;
 			width: 75em;
 		}
-
-			@media screen and (max-width: 1680px) {
-
-				.wrapper > .inner {
-					padding: 4em 4em 2em 4em ;
-				}
-
-			}
-
-			@media screen and (max-width: 1280px) {
-
-				.wrapper > .inner {
-					width: 100%;
-				}
-
-			}
-
-			@media screen and (max-width: 736px) {
-
-				.wrapper > .inner {
-					padding: 3em 2em 1em 2em ;
-				}
-
-			}
 
 		.wrapper.alt {
 			background-color: #261c3e;
@@ -3898,33 +3866,13 @@ input, select, textarea {
 
 		}
 
-		@media screen and (max-width: 736px) {
-
-			#sidebar {
-				display: none;
-			}
-
-    }
-    
 /* Sponsor bar */
 #sponsor {
-  padding: 2.5em 2.5em 0.5em 2.5em ;
   background: #EE6C4D;
   color: #FFFFFF;
   cursor: default;
-  height: 7em;
-  height: 0;
-  left: 0;
-  overflow-x: auto;
-  overflow-y: auto;
-  position: relative;
   text-align: center;
-  top: 3.5em;
-  width: 18em;
-  z-index: 10000;
   width: 100%;
-  padding: 0;
-  line-height: 3.5em;
   transition-property:height; 
   transition-duration:1s;
 }

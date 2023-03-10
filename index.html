@@ -11,7 +11,6 @@
  <meta name="viewport" content="width=device-width, initial-scale=1" />
  <link rel="stylesheet" href="assets/css/main.css" />
 
-<script src="renderer.js" ></script>
  </head>
  <body>
 
@@ -21,10 +20,11 @@
   <nav>
   <ul>
   <li><a href="#loader">Choose Firmware</a></li>
-  <li><a href="#details">Firmware Details</a></li>
+  <li style="display: none;"><a href="#details">Firmware Details</a></li>
   <li><a href="#port">Choose Port</a></li>
   <li><a href="#progress">Progress</a></li>
   <li><a href="#basetunes">Base Tunes</a></li>
+  <li style="display: none;"><a href="#basetunewarning">Base Tunes</a></li>
   </ul>
   </nav>
   </div>
@@ -34,7 +34,7 @@
  <div class="wrapper">
 
  <!-- Choose Version -->
- <section id="loader" class="wrapper style1 fullscreen fade-up" style="height: 100vh;">
+ <section id="loader" class="wrapper style1" style="height: 100vh;">
  <div class="inner">
  <div style="display: none; text-align: center;" id="update_text"><a href="" id="update_url" target="_blank">A new version is available. Click here to download</a></div>
  <center><img src="assets/speeduino logo_white.png" width="235"/></center>
@@ -44,12 +44,12 @@
     <span class="icon fa-spinner" style="position: absolute; left: 48%; top: 42%;" id="fwVersionsSpinner"></span>
     <select name="firmwares" class="select" id="versionsSelect" size="10" width="20" onClick="refreshBasetunes();"></select>
     <ul class="actions">
-        <li><input type='button' id="btnChoosePort" value="Choose Port" onclick="window.location.href='#port';" /></li>
+        <li><input type='button' id="btnChoosePort" value="Choose Port" /></li>
     </ul>
     <p>Other actions:</p>
     <ul class="actions">
-        <li><input type='button' id="btnDetails" value="View Firmware Notes" onclick="refreshDetails();" /></li>
-        <li><input type='button' value="Get Base Tune" id="btnBasetune" onclick="window.location.href='#basetunes';" /></li> 
+        <li><input type='button' id="btnDetails" value="View Firmware Notes" /></li>
+        <li><input type='button' value="Get Base Tune" id="btnBasetune" /></li> 
     </ul>
  </p>
  <div id="error"></div>
@@ -58,32 +58,32 @@
  </section>
 
  <!-- Firmware details -->
-<section id="details" class="wrapper style1-alt spotlights" style="display: none; height: 100vh;">
+<section id="details" class="wrapper style1-alt" style="height: 100vh;">
 <div class="inner">
-    <h1>Firmware Notes</h1>
+    <h2>Firmware Notes</h2>
     
     <div class="features major" >
         <h2><div id="detailsHeading" style="padding-left: 0.55em;" ></div></h2>
         <div id="detailsText" style="padding-left: 0.9em; padding-right: 0.9em; overflow-y: scroll; height: 50vh;"></div>
     </div>
     <ul class="actions">
-        <li><input type='button' value="Get Base Tune" id="btnBasetune" onclick="window.location.href='#basetunes';" /></li> 
-        <li><input type='button' id="btnDetails" value="Change Version" onclick="window.location.href='#loader';" /></li>
-        <li><input type='button' id="btnChoosePort" value="Install" onclick="window.location.href='#port';" /></li>
+        <li><input type='button' value="Get Base Tune" id="btnBasetune" /></li> 
+        <li><input type='button' id="btnLoader" value="Change Version" /></li>
+        <li><input type='button' id="btnChoosePort" value="Install" /></li>
     </ul>
 </div>
 </section>
 
 <!-- Choose Port -->
-<section id="port" class="wrapper style2 fullscreen fade-up" style="height: 100vh;">
+<section id="port" class="wrapper style2" style="height: 100vh;">
         <div class="inner">
-        <h1>Select Serial Port</h1>
+        <h2>Select Serial Port</h2>
         <p>Available Ports:
         <select name="ports" class="select" id="portsSelect" size="10" width="20"></select>
         <ul class="actions">
                 <!--  <li><input type='button' value="Install Serial Drivers" onclick="installDrivers();" /></li> -->
                 <li><input type='button' value="Refresh" onclick="refreshSerialPorts();" /></li>
-                <li><input type='button' value="Upload" id="btnInstall" onclick="uploadFW();" /></li>
+                <li><input type='button' value="Upload" id="btnInstall" /></li>
         </ul>
         </p>
         </div>
@@ -92,22 +92,30 @@
 </section>
 
  <!-- Progress -->
- <section id="progress" class="wrapper style3 fade-up" style="height: 100vh;">
-    <!-- Sponsor bar -->
+ <section id="progress" class="wrapper style3" style="height: 100vh;">
+
+<!-- Sponsor bar -->
+<div class="features" id="sponsorbox" style="display: none;">
     <section id="sponsor">
-      <div class="inner">
-        <p><center><a href="https://github.com/sponsors/noisymime" target="_blank">Speeduino is a volunteer run project. Click here if you're interested in supporting Speeduino's development</a><br /><span class="icon major fa-heart"></span></center></p>
-      </div>
+        <span class="icon major fa-heart"></span>
+        <p><center>
+            <a href="https://github.com/sponsors/noisymime" target="_blank">Speeduino is a volunteer run project. Click here if you're interested in supporting Speeduino's development</a>
+        </center>
+        </p>
     </section>
+</div>
+
  <div class="inner">
+
     <h2>Progress</h2>
+
     <div class="features">
         <section>
             <span class="icon major fa-pause" id="progressSpinner"></span>
             <p>
                 <strong>Current Status:</strong>
                 <span id="statusText"></span><span id="burnPercent"></span><br />
-                <span id="iniFileText" style="display: none;">TunerStudio definition file: <a id="iniFileLink" onClick="openFileMgr();" ><span id="iniFileLocation"></span></a></span></span>
+                <span id="iniFileText" style="display: none;">TunerStudio definition file: <a id="iniFileLink"><span id="iniFileLocation"></span></a></span></span>
             </p>
         </section>
         <section id="terminalSection" style="display: none;">
@@ -117,36 +125,20 @@
         </section>
     </div>
     <ul class="actions">
-        <li><input type='button' id="btnChoosePort" value="Choose Port" onclick="window.location.href='#port';" /></li> 
-        <li><input type='button' value="Burn again" id="btnReinstall" onclick="uploadFW();" /></li>
-        <li><input type='button' value="Get Base Tune" id="btnBasetune" onclick="window.location.href='#basetunes';" /></li> 
+        <li><input type='button' id="btnChoosePort" value="Choose Port" /></li> 
+        <li><input type='button' value="Burn again" id="btnReinstall" /></li>
+        <li><input type='button' value="Get Base Tune" id="btnBasetune" /></li> 
     </ul>
     <ul class="actions">
-        <li><input type='button' value="Exit" id="btnExit" onclick="quit();" /></li>   
+        <li><input type='button' value="Exit" id="btnExit" /></li>   
     </ul>
  </div>
  </section>
 
-  <!-- Firmware details -->
-<section id="details" class="wrapper style1-alt spotlights" style="display: none; height: 100vh;">
-<div class="inner">
-    <h1>Firmware Notes</h1>
-    
-    <div class="features major" >
-        <h2><div id="detailsHeading" style="padding-left: 0.55em;" ></div></h2>
-        <div id="detailsText" style="padding-left: 0.9em; padding-right: 0.9em; overflow-y: auto; height: 50vh;"></div>
-    </div>
-    <ul class="actions">
-        <li><input type='button' id="btnDetails" value="Change Version" onclick="window.location.href='#loader';" /></li>
-        <li><input type='button' id="btnChoosePort" value="Install" onclick="window.location.href='#port';" /></li>
-    </ul>
-</div>
-</section>
-
 <!-- Base Tune download -->
-<section id="basetunes" class="wrapper style4 fullscreen fade-up" style="height: 100vh;">
+<section id="basetunes" class="wrapper style4" style="height: 100vh;">
 <div class="inner">
-    <h2 style="margin: 0;">Base Tunes</h1>
+    <h2 style="margin: 0;">Base Tunes</h2>
     <p style="font-size: 12px;">
         Tune Author: <select id="basetunesAuthor" class="select1" onChange="refreshBasetunesFilters()" ></select>
         Make: <select id="basetunesMake" class="select1" onChange="refreshBasetunesFilters()" ></select>
@@ -155,35 +147,62 @@
     <p>
         Available Tunes
         <span class="icon fa-spinner" style="position: absolute; left: 48%; top: 42%;" id="baseTuneSpinner"></span>
-        <select name="basetunes" class="select5" id="basetunesSelect" size="10" width="20" onChange="refreshBasetunesDescription()"></select>
+        <select name="basetunes" id="basetunesSelect" size="10" width="20" onChange="refreshBasetunesDescription()"></select>
         <div class="features major" >
           <div id="tuneDetailsText" style="padding-left: 0.9em; padding-right: 0.9em; padding-top: 0.1em; overflow-y: auto; height: 17vh; font-size: 14px;"></div>
         </div>
         <ul class="actions">
-            <li><input type='button' id="btnDownloadBasetune" value="Download tune" onclick="showBasetuneWarning();" /></li>
-            <li><input type='button' value="Exit" id="btnExit" onclick="quit();" /></li> 
+            <li><input type='button' id="btnDownloadBasetune" value="Download tune" /></li>
+            <li><input type='button' value="Exit" id="btnExit" /></li> 
         </ul>
     </p>
 </div>
 </section>
 
- </div>
+<!-- Base tune warning -->
+<section id="basetunewarning" class="wrapper style5" style="height: 100vh;">
+<div class="inner">
+
+    <h1 style="text-align: center; width: 100%;">WARNING</h1>
+    <div class="features major">
+    
+    <p style="text-align: center; width: 100%;">Base tunes are intended as a starting point ONLY. They will require changes in order to work correctly with your engine!</p>
+        <center><span class="icon fa-exclamation major" id="warningIcon"></span></center>
+        <p style="text-align: center; width: 100%;">Take note of the board that has been used in this tune. If you are not using this board you need to change this setting immediately:</p>
+        <p style="text-align: center; width: 100%;">
+            <span class="icon fa-arrow-right" id="emphasisIcon"></span>
+            <span style="font-weight: bold;" id="tuneBoard"></span>
+            <span class="icon fa-arrow-left" id="emphasisIcon"></span>
+        </p>
+    </div>
+
+<ul class="actions modal">
+    <li><input type='button' id="btnDownloadConfirm" value="Download" onclick="downloadBasetune();" /></li>
+    <li><input type='button' id="btnDownloadCancel" value="Cancel" /></li>
+</ul>
+
+</div>
+</section>
+
+
 
  <!-- Footer -->
  <footer id="footer" class="wrapper style1-alt">
  <div class="inner">
  <ul class="menu">
- <li>&copy; Josh Stewart. All rights reserved.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li><li>Version: 0.0.3</li>
+ <li>&copy; Josh Stewart. All rights reserved.</li><li>Design: <a href="http://html5up.net" target="_blank">HTML5 UP</a></li><li>Version: 0.0.3</li>
  </ul>
  </div>
  </footer>
 
  <!-- Scripts -->
- <script>window.$ = window.jQuery = require('./assets/js/jquery.min.js');</script>
+ <script>window.$ = window.jQuery = require('jquery');</script>
  <script src="assets/js/jquery.scrollex.min.js"></script>
  <script src="assets/js/jquery.scrolly.min.js"></script>
  <script src="assets/js/skel.min.js"></script>
+ <script src="assets/js/breakpoints.min.js"></script>
  <script src="assets/js/util.js"></script>
  <script src="assets/js/main.js"></script>
+ <script src="renderer.js"></script>
  </body>
 </html>

@@ -1,8 +1,6 @@
-const serialport = require('serialport')
+const serialport = require('@serialport/bindings-cpp')
 const usb = require('usb')
-const JSON5 = require('json5')
 const {ipcRenderer} = require("electron")
-const {remote} = require('electron')
 const { shell } = require('electron')
 
 var basetuneList = [];
@@ -39,17 +37,17 @@ function getTeensyVersion(id)
 
 function refreshSerialPorts()
 {
-  serialport.list().then(ports => {
+  serialport.autoDetect().list().then(ports => {
     console.log('Serial ports found: ', ports);
   
     if (ports.length === 0) {
       document.getElementById('serialDetectError').textContent = 'No ports discovered'
     }
   
-    select = document.getElementById('portsSelect');
+    const select = document.getElementById('portsSelect');
 
     //Clear the current options
-    for (i = 0; i <= select.options.length; i++) 
+    while (select.options.length)
     {
         select.remove(0); //Always 0 index (As each time an item is removed, everything shuffles up 1 place)
     }
@@ -127,35 +125,28 @@ function refreshDetails()
     var version = selectElement.options[selectElement.selectedIndex].value;
     var url = "https://api.github.com/repos/noisymime/speeduino/releases/tags/" + version;
 
+    document.getElementById('detailsText').innerHTML = "";
     document.getElementById('detailsHeading').innerHTML = version;
     
-    var request = require('request');
-    const options = {
-        url: url,
-        headers: {
-          'User-Agent': 'request'
+    fetch(url)
+    .then((response) => {
+        if (response.ok) {
+            return response.json();
         }
-      };
+        return Promise.reject(response);
+    })
+    .then((result) => {
+        console.log(result);
 
-    request.get(options, function (error, response, body) {
-        if (!error ) {
-
-            console.log(body);
-            var result = JSON.parse(body);
-            
-            // Continue with your processing here.
-            textField = document.getElementById('detailsText');
-
-            //Need to convert the Markdown that comes from Github to HTML
-            var myMarked = require('marked');
-            textField.innerHTML = myMarked(result.body);
-        }
+        //Need to convert the Markdown that comes from Github to HTML
+        var myMarked = require('marked');
+        document.getElementById('detailsText').innerHTML = myMarked.parse(result.body);
+        document.getElementById('detailsHeading').innerHTML = version + " - " + result.name;
+    })
+    .catch((error) => {
+        console.log('Could not download details.', error);
     });
 
-    //Finally, make the details section visible
-    document.getElementById('details').style.display = "inline";
-    //And jump to it
-    window.location.href = "#details";
 }
 
 function refreshAvailableFirmwares()
@@ -168,61 +159,61 @@ function refreshAvailableFirmwares()
     ChoosePortButton.disabled = true;
     basetuneButton.disabled = true;
 
-    var request = require('request');
-    request.get('https://speeduino.com/fw/versions', {timeout: 20000}, function (error, response, body) 
-    {
-        select = document.getElementById('versionsSelect');
-        if (!error && response.statusCode == 200) {
+    const select = document.getElementById('versionsSelect');
 
-            var lines = body.split('\n');
-            // Continue with your processing here.
-            
-            for(var i = 0;i < lines.length;i++)
-            {
-                var newOption = document.createElement('option');
-                newOption.value = lines[i];
-                newOption.innerHTML = lines[i];
-                select.appendChild(newOption);
-            }
-            select.selectedIndex = 0;
-
-            //Remove the loading spinner
-            loadingSpinner = document.getElementById("fwVersionsSpinner");
-            loadingSpinner.style.display = "none";
-
-            refreshBasetunes();
-
-            //Re-enable the buttons
-            DetailsButton.disabled = false;
-            ChoosePortButton.disabled = false;
-            basetuneButton.disabled = false;
+    fetch('https://speeduino.com/fw/versions', { signal: AbortSignal.timeout(5000) } )
+    .then((response) => {
+        if (response.ok) {
+            return response.text();
         }
-        else if(error)
+        return Promise.reject(response);
+    })
+    .then((result) => {
+        var lines = result.split('\n');
+        // Continue with your processing here.
+        
+        for(var i = 0;i < lines.length;i++)
         {
-            console.log("Error retrieving available firmwares: " + error);
             var newOption = document.createElement('option');
-            if(error.code === 'ETIMEDOUT')
-            {
-                newOption.value = "Connection timed out";
-                newOption.innerHTML = "Connection timed out";
-            }
-            else
-            {
-                newOption.value = "Cannot retrieve firmware list";
-                newOption.innerHTML = "Cannot retrieve firmware list. Check internet connection and restart";
-            }
+            newOption.value = lines[i];
+            newOption.innerHTML = lines[i];
             select.appendChild(newOption);
-
-            //Remove the loading spinner
-            loadingSpinner = document.getElementById("fwVersionsSpinner");
-            loadingSpinner.style.display = "none";
         }
-        else if(response.statusCode == 404)
+        select.selectedIndex = 0;
+
+        //Remove the loading spinner
+        loadingSpinner = document.getElementById("fwVersionsSpinner");
+        loadingSpinner.style.display = "none";
+
+        refreshBasetunes();
+
+        //Re-enable the buttons
+        DetailsButton.disabled = false;
+        ChoosePortButton.disabled = false;
+        basetuneButton.disabled = false;
+
+    })
+    .catch((error) => {
+        console.log("Error retrieving available firmwares. ", error);
+
+        var newOption = document.createElement('option');
+        if(error.code === 'ETIMEDOUT')
         {
-
+            newOption.value = "Connection timed out";
+            newOption.innerHTML = "Connection timed out";
         }
-    }
-    );
+        else
+        {
+            newOption.value = "Cannot retrieve firmware list";
+            newOption.innerHTML = "Cannot retrieve firmware list. Check internet connection and restart";
+        }
+        select.appendChild(newOption);
+
+        //Remove the loading spinner
+        loadingSpinner = document.getElementById("fwVersionsSpinner");
+        loadingSpinner.style.display = "none";
+    });
+
 }
 
 function refreshBasetunes()
@@ -235,26 +226,27 @@ function refreshBasetunes()
         //var url = "https://speeduino.com/fw/basetunes.json";
         var url = "https://github.com/speeduino/Tunes/raw/main/index.json";
         
-        var request = require('request');
-        const options = {
-            url: url,
-            headers: {
-            'User-Agent': 'request'
+        fetch(url)
+        .then((response) => {
+            if (response.ok) {
+                return response.json();
             }
-        };
+            return Promise.reject(response);
+        })
+        .then((result) => {
 
-        request.get(options, function (error, response, body) {
-            if (!error ) 
-            {
-              basetuneList = JSON5.parse(body);
+            basetuneList = result;
 
-              //Remove the loading spinner
-              loadingSpinner = document.getElementById("baseTuneSpinner");
-              loadingSpinner.style.display = "none";
+            //Remove the loading spinner
+            loadingSpinner = document.getElementById("baseTuneSpinner");
+            loadingSpinner.style.display = "none";
 
-              refreshBasetunes();
-            }
+            refreshBasetunes();
+        })
+        .catch((error) => {
+            console.log('Could not download base tune list.', error);
         });
+
     }
     else
     {
@@ -325,7 +317,7 @@ function refreshBasetunes()
 function refreshBasetunesFilters()
 {
   //Get the display list object
-  var select = document.getElementById('basetunesSelect');
+  const select = document.getElementById('basetunesSelect');
 
   //Get the currently selected Author
   selectElement = document.getElementById('basetunesAuthor');
@@ -361,7 +353,6 @@ function refreshBasetunesFilters()
           //console.log("Tune url: " + url);
           //console.log("Found a valid tune: " + basetuneList[tune].displayName);
           var newOption = document.createElement('option');
-          newOption.style.background = "#022b3a";
           newOption.dataset.filename = basetuneList[tune].filename;
           newOption.dataset.make = basetuneList[tune].make;
           newOption.dataset.description = basetuneList[tune].description;
@@ -439,38 +430,6 @@ function downloadIni()
 
 }
 
-function showBasetuneWarning()
-{
-  let mainWindow = remote.BrowserWindow.getFocusedWindow();
-  warningWindow = new remote.BrowserWindow({ width: 550, height: 380, modal: true, parent: mainWindow, show: false })
-
-  var select = document.getElementById('basetunesSelect');
-  selectedTune = select.options[select.selectedIndex];
-  
-  // auto hide menu bar (Win, Linux)
-  warningWindow.setMenuBarVisibility(false);
-  warningWindow.setAutoHideMenuBar(true);
-
-  // remove completely when app is packaged (Win, Linux)
-  if (remote.app.isPackaged) {
-    warningWindow.removeMenu();
-  }
-
-  board = selectedTune.dataset.board
-  warningWindow.loadURL(`file://${__dirname}/warning.html?board=` + board);
-  
-  warningWindow.once('ready-to-show', () => {
-    warningWindow.show();
-  })
-
-  warningWindow.on('close', () => {
-    warningWindow = null;
-    downloadBasetune();
-  });
-
-
-}
-
 function downloadBasetune()
 {
   console.log("downloading");
@@ -487,6 +446,9 @@ function downloadBasetune()
       url: DLurl,
       properties: {directory: "downloads"}
   });
+
+  const baseTuneLink = document.querySelectorAll('a[href="#basetunes"]');
+  baseTuneLink[0].click();
 }
 
 //Installing the Windows drivers
@@ -499,8 +461,6 @@ function installDrivers()
 
 function uploadFW()
 {
-    //Jump to the progress section
-    window.location.href = "#progress";
 
     //Start the spinner
     var spinner = document.getElementById('progressSpinner');
@@ -549,7 +509,7 @@ function uploadFW()
             console.log("Using port: " + uploadPort);
 
             //Show the sponsor banner
-            document.getElementById('sponsor').style.height = "7em"
+            document.getElementById('sponsorbox').style.display = "block"
 
             //Begin the upload
             if(uploadBoard.includes("TEENSY"))
@@ -593,7 +553,7 @@ function uploadFW()
         statusText.innerHTML = "Upload to Speeduino failed";
 
         //Hide the donation bar as it makes the terminal go offscreen
-        document.getElementById('sponsor').style.height = 0;
+        document.getElementById('sponsorbox').style.display = "none"
 
         //Mke the terminal/error section visible
         document.getElementById('terminalSection').style.display = "block";
@@ -609,59 +569,43 @@ function uploadFW()
 
 }
 
-//Opens a native file manager window at the location of the downloaded ini file
-function openFileMgr()
+async function checkForUpdates()
 {
-    var location = document.getElementById('iniFileLocation').innerHTML
-    if (location != "")
-    {
-        shell.showItemInFolder(location);
-    } 
-}
+    //Adds the current version number to the Titlebar
+    let current_version = await ipcRenderer.invoke("getAppVersion");
+    document.getElementById('title').innerHTML = "Speeduino Universal Firmware Loader (v" + current_version + ")"
 
-function quit()
-{
-    let w = remote.getCurrentWindow();
-    w.close();
-}
-
-function checkForUpdates()
-{
     var url = "https://api.github.com/repos/speeduino/SpeedyLoader/releases/latest";
 
     //document.getElementById('detailsHeading').innerHTML = version;
-    
-    var request = require('request');
-    const options = {
-        url: url,
-        headers: {
-          'User-Agent': 'request'
-        }
-      };
 
-    request.get(options, function (error, response, body) {
-        if (!error ) 
+    fetch(url)
+    .then((response) => {
+        if (response.ok) {
+            return response.json();
+        }
+        return Promise.reject(response);
+    })
+    .then((result) => {
+
+        latest_version = result.tag_name.substring(1);
+        console.log("Latest version: " + latest_version);
+
+        var semver = require('semver');
+        if(semver.gt(latest_version, current_version))
         {
-            var result = JSON.parse(body);
-            latest_version = result.tag_name.substring(1);
-            console.log("Latest version: " + latest_version);
-
-            var semver = require('semver');
-            if(semver.gt(latest_version, remote.app.getVersion()))
-            {
-                //New version has been found
-                document.getElementById('update_url').setAttribute("href", result.html_url);
-                document.getElementById('update_text').style.display = "block";
-            }
+            //New version has been found
+            document.getElementById('update_url').setAttribute("href", result.html_url);
+            document.getElementById('update_text').style.display = "block";
         }
+    })
+    .catch((error) => {
+        console.log('Could not get latest version.', error);
     });
 
 }
 
 window.onload = function () {
-    //Adds the current version number to the Titlebar
-    document.getElementById('title').innerHTML = "Speeduino Universal Firmware Loader (v" + remote.app.getVersion() + ")"
-    
     refreshAvailableFirmwares();
     refreshBasetunes();
     refreshSerialPorts();
@@ -669,3 +613,58 @@ window.onload = function () {
     
 };
 
+$(function(){
+
+	// Button handlers
+	$(document).on('click', '#btnChoosePort', function(event) {
+		$("[href='#port']").trigger('click');
+	});
+
+	$(document).on('click', '#btnBasetune', function(event) {
+		$("[href='#basetunes']").trigger('click');
+	});
+
+	$(document).on('click', '#btnLoader', function(event) {
+		$("[href='#loader']").trigger('click');
+	});
+
+	$(document).on('click', '#btnDetails', function(event) {
+		refreshDetails();
+		$("[href='#details']").trigger('click');
+	});
+
+	$(document).on('click', '#btnInstall', function(event) {
+		$("[href='#progress']").trigger('click');
+		uploadFW();
+	});
+
+	$(document).on('click', '#btnReinstall', function(event) {
+		$("[href='#progress']").trigger('click');
+		uploadFW();
+	});
+
+	$(document).on('click', '#btnDownloadBasetune', function(event) {
+		const select = document.getElementById('basetunesSelect');
+		const selectedTune = select.options[select.selectedIndex];
+		document.getElementById("tuneBoard").innerHTML = selectedTune.dataset.board;
+
+		$("[href='#basetunewarning']").trigger('click');
+	});
+
+	$(document).on('click', '#btnDownloadCancel', function(event) {
+		$("[href='#basetunes']").trigger('click');
+	});
+
+	$(document).on('click', '#btnExit', function(event) {
+		ipcRenderer.invoke('quit-app');
+	});
+
+	$(document).on('click', '#iniFileLink', function(event) {
+    var location = document.getElementById('iniFileLocation').innerHTML
+    if (location != "")
+    {
+      ipcRenderer.invoke('show-ini', location);
+    }
+	});
+
+}); 

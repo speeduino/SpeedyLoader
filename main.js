@@ -1,6 +1,5 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, shell } = require('electron')
 const {download} = require('electron-dl')
-const {spawn} = require('child_process');
 const {execFile} = require('child_process');
 const fs = require('fs');
 const path = require('path');
@@ -23,8 +22,16 @@ function createWindow ()
     backgroundColor: '#312450',
     webPreferences: {
       nodeIntegration: true,
-      enableRemoteModule: true,
+      contextIsolation: false,
     },
+  });
+
+  // Open links in external browser
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('https:')) {
+      shell.openExternal(url);
+    }
+    return { action: 'deny' };
   });
 
   // auto hide menu bar (Win, Linux)
@@ -50,11 +57,6 @@ function createWindow ()
     win = null
   })
 
-  //This forces any links that have a target of _blank to open in a browser rather than Electron window
-  win.webContents.on('new-window', function(e, url) {
-  e.preventDefault();
-  require('electron').shell.openExternal(url);
-  });
 }
 
 //Required for newer versions of Electron to work with serialport
@@ -87,7 +89,8 @@ app.on('activate', () => {
 ipcMain.on('download', (e, args) => {
   filename = args.url.substring(args.url.lastIndexOf('/')+1);
   dlDir = app.getPath('downloads');
-  fullFile = dlDir + "/" + filename;
+  const path = require('node:path');
+  fullFile = path.join(dlDir, filename);
 
   //Special case for handling the build that is from master. This is ALWAYS downloaded as there's no way of telling when it was last updated. 
   if(filename.includes("master")) 
@@ -171,7 +174,6 @@ ipcMain.on('uploadFW', (e, args) => {
   var execArgs = ['-v', '-patmega2560', '-C', configName, '-cwiring', '-b 115200', '-P', args.port, '-D', '-U', hexFile];
 
   console.log(executableName);
-  //const child = spawn(executableName, execArgs);
   const child = execFile(executableName, execArgs);
 
   child.stdout.on('data', (data) => {
@@ -304,4 +306,19 @@ ipcMain.on('uploadFW', (e, args) => {
       e.sender.send( "upload completed", code )
     }
   });
+});
+
+ipcMain.handle('getAppVersion', async (e) => {
+  return app.getVersion();
+});
+
+ipcMain.handle('quit-app', () => {
+  app.quit();
+});
+
+ipcMain.handle('show-ini', (event, location) => {
+  if (location.endsWith('.ini'))
+  {
+      shell.showItemInFolder(location); // This function needs to be executed in main.js to bring file explorer to foreground
+  }
 });
