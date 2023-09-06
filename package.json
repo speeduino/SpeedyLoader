@@ -25,7 +25,7 @@
   "homepage": "https://github.com/speeduino/SpeedyLoader",
   "devDependencies": {
     "@electron/rebuild": "^3.2.10",
-    "electron": "^22.0.1",
+    "electron": "^22.3.21",
     "electron-packager": "^17.1.1"
   },
   "dependencies": {
