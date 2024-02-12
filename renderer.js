@@ -85,6 +85,13 @@ function refreshSerialPorts()
           newOption.innerHTML = newOption.innerHTML + " (Arduino Mega CH340)"; 
           newOption.setAttribute("board", "ATMEGA2560");
         }
+        else if(ports[i].vendorId == "0483" && ports[i].productId == "5740")
+        {
+          //STM32F407
+          newOption.innerHTML = newOption.innerHTML + " (STM32F407 - Serial Mode)"; 
+          newOption.setAttribute("board", "STM32F407_serial");
+          console.log(ports[i].productId)
+        }
         else
         {
           //Unknown device, assume it's a mega2560
@@ -108,6 +115,28 @@ function refreshSerialPorts()
       newOption.setAttribute("board", "TEENSY"+teensyVersion);
       select.add(newOption);
     })
+
+    //Look for any STM32 devices in DFU mode
+    var uninitialisedTeensyDevices = usb.getDeviceList().filter( function(d) {
+      return d.deviceDescriptor.idVendor===0x0483 && d.deviceDescriptor.bcdDevice===0x2200; //Interface class 3 is HID
+    });
+    uninitialisedTeensyDevices.forEach((device, index) => {
+      console.log("STM32 in DFU mode found: ", getTeensyVersion(device.deviceDescriptor.bcdDevice))
+      var newOption = document.createElement('option');
+      newOption.value = "STM32F407_DFU";
+      var teensyVersion = getTeensyVersion(device.deviceDescriptor.bcdDevice);
+      newOption.innerHTML = "STM32F407 in DFU mode";
+      teensyVersion = teensyVersion.replace(".", "");
+      newOption.setAttribute("board", "STM32F407_DFU");
+      select.add(newOption);
+    })
+    /*
+    for(x=0; x<usb.getDeviceList().length; x++)
+    {
+      console.log("Vendor: " + usb.getDeviceList()[x].deviceDescriptor.idVendor + " Device Descriptor: " + usb.getDeviceList()[x].deviceDescriptor.bcdDevice);
+    }
+    */
+    
     
     var button = document.getElementById("btnInstall")
     if(ports.length > 0) 
@@ -424,6 +453,10 @@ function downloadHex(board, localFile="")
         DLurl = "http://speeduino.com/fw/bin/" + e.options[e.selectedIndex].value + ".hex";
         console.log("Downloading AVR firmware: " + DLurl);
         break;
+      case "STM32F407_DFU":
+        DLurl = "http://speeduino.com/fw/stm32f407/" + e.options[e.selectedIndex].value + "-stm32f407.bin";
+        console.log("Downloading STM32F407 firmware: " + DLurl);
+        break;
       default:
         DLurl = "http://speeduino.com/fw/bin/" + e.options[e.selectedIndex].value + ".hex";
         console.log("Downloading AVR firmware: " + DLurl);
@@ -526,7 +559,7 @@ function uploadFW()
             document.getElementById('iniFileLocation').innerHTML = file
             downloadHex(uploadBoard);
         }
-        else if(extension == "hex")
+        else if(extension == "hex" || extension == "bin")
         {
           console.log("Uploading da file!!");
             statusText.innerHTML = "Beginning upload..."
@@ -545,6 +578,15 @@ function uploadFW()
             {
               console.log("Uploading using Teensy_loader")
               ipcRenderer.send("uploadFW_teensy", {
+                port: uploadPort,
+                firmwareFile: file,
+                board: uploadBoard
+              });
+            }
+            else if(uploadBoard.includes("STM32F407"))
+            {
+              console.log("Uploading using DFU Util")
+              ipcRenderer.send("uploadFW_stm32", {
                 port: uploadPort,
                 firmwareFile: file,
                 board: uploadBoard

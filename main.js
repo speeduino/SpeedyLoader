@@ -11,7 +11,9 @@ let win
 var avrdudeErr = "";
 var avrdudeIsRunning = false;
 var teensyLoaderIsRunning = false;
+var dfuutilIsRunning = false;
 var teensyLoaderErr = ""
+var dfuutilErr = ""
 
 function createWindow () 
 {
@@ -235,6 +237,92 @@ ipcMain.on('uploadFW', (e, args) => {
 
 });
 
+ipcMain.on("uploadFW_stm32", (e, args) => {
+  //"dfu-util" -d 0x0483:0xDF11 -a 0 -s 0x08000000:leave -D"
+  if(dfuutilIsRunning == true) { return; }
+  dfuutilIsRunning = true; //Indicate that an avrdude process has started
+  var platform;
+  var burnStarted = false;
+
+  //All Windows builds use the 32-bit binary
+  if(process.platform == "win32") 
+  { 
+    platform = "dfuutil-windows"; 
+  }
+  //All Mac builds use the 64-bit binary
+  else if(process.platform == "darwin") 
+  { 
+    platform = "dfuutil-darwin-x86_64";
+  }
+  else if(process.platform == "linux") 
+  { 
+    if(process.arch == "x32") { platform = "dfuutil-linux-i686"; }
+    else if(process.arch == "x64") { platform = "dfuutil-linux-x86_64"; }
+    else if(process.arch == "arm") { platform = "dfuutil-armhf"; }
+    else if(process.arch == "arm64") { platform = "dfuutil-aarch64"; }
+  }
+
+  var executableName = __dirname + "/bin/" + platform + "/dfu-util";
+  executableName = executableName.replace('app.asar',''); //This is important for allowing the binary to be found once the app is packaed into an asar
+  //console.log(executableName);
+
+  var execArgs = ['-d', '0x0483:0xDF11', '-a', '0', '-s', '0x08000000:leave', '-D', args.firmwareFile];
+  //console.log(execArgs);
+
+  if(process.platform == "win32") { executableName = executableName + '.exe'; } //This must come after the configName line above
+  
+  console.log(executableName);
+  const child = execFile(executableName, execArgs);
+
+  child.stdout.on('data', (data) => {
+    console.log(`dfu-util stdout:\n${data}`);
+  });
+
+  child.stderr.on('data', (data) => {
+    console.log(`dfu-util stderr: ${data}`);
+    dfuutilErr = dfuutilErr + data;
+
+    //Check if avrdude has started the actual burn yet, and if so, track the '#' characters that it prints. Each '#' represents 1% of the total burn process (50 for write and 50 for read)
+    if (burnStarted == true)
+    {
+      if(data=="#") { burnPercent += 1; }
+      e.sender.send( "upload percent", burnPercent );
+    }
+    else
+    {
+      //This is a hack, but basically watch the output from teensy loader for the term 'Writing | ', everything after that is the #s indicating 1% of burn. 
+      if(dfuutilErr.includes("Erase    done."))
+      {
+        burnStarted = true;
+      }
+    }
+    
+  });
+
+  child.on('error', (err) => 
+  {
+    console.log('Failed to start subprocess.');
+    console.log(err);
+    dfuutilIsRunning = false;
+  });
+
+  child.on('close', (code) => 
+  {
+    dfuutilIsRunning = false;
+    if (code !== 0) 
+    {
+      console.log(`dfu-util process exited with code ${code}`);
+      e.sender.send( "upload error", dfuutilErr )
+      teensyLoaderErr = "";
+    }
+    else
+    {
+      e.sender.send( "upload completed", code )
+    }
+  });
+
+});
+
   ipcMain.on('uploadFW_teensy', (e, args) => {
 
     if(teensyLoaderIsRunning == true) { return; }
@@ -300,13 +388,15 @@ ipcMain.on('uploadFW', (e, args) => {
       
     });
 
-  child.on('error', (err) => {
+  child.on('error', (err) => 
+  {
     console.log('Failed to start subprocess.');
     console.log(err);
     teensyLoaderIsRunning = false;
   });
 
-  child.on('close', (code) => {
+  child.on('close', (code) => 
+  {
     teensyLoaderIsRunning = false;
     if (code !== 0) 
     {
