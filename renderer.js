@@ -89,6 +89,7 @@ function refreshSerialPorts()
         {
           //Unknown device, assume it's a mega2560
           newOption.setAttribute("board", "ATMEGA2560");
+          console.log(ports[i].vendorId)
         }
         select.add(newOption);
     }
@@ -378,7 +379,29 @@ function refreshBasetunesDescription()
   descriptionElement.innerHTML = selectElement.options[selectElement.selectedIndex].dataset.description;
 }
 
-function downloadHex(board)
+ipcRenderer.on("add local hex", (event, filename, state) => 
+{
+  //Check if Local option already exists
+  var lastOption = document.getElementById('versionsSelect').lastElementChild
+  if(lastOption.innerHTML == "Local")
+  {
+    console.log("Local option already exists, updating");
+    lastOption.value = filename;
+  }
+  else
+  {
+    var newOption = document.createElement('option');
+    newOption.dataset.filename = filename;
+    newOption.innerHTML = "Local";
+    var select = document.getElementById('versionsSelect');
+    select.appendChild(newOption);
+  }
+
+  //Jump to the port selection screen
+  $("[href='#port']").trigger('click');
+})
+
+function downloadHex(board, localFile="")
 {
 
     var e = document.getElementById('versionsSelect');
@@ -417,8 +440,13 @@ function downloadHex(board)
 
 function downloadIni()
 {
-
     var e = document.getElementById('versionsSelect');
+    if(e.options[e.selectedIndex].innerHTML == "Local") 
+    {
+      console.log("Local version selected, not downloading ini");
+      return;
+    }
+
     var DLurl = "https://speeduino.com/fw/" + e.options[e.selectedIndex].value + ".ini";
     console.log("Downloading: " + DLurl);
 
@@ -500,6 +528,7 @@ function uploadFW()
         }
         else if(extension == "hex")
         {
+          console.log("Uploading da file!!");
             statusText.innerHTML = "Beginning upload..."
 
             //Retrieve the select serial port
@@ -619,6 +648,10 @@ $(function(){
 	$(document).on('click', '#btnChoosePort', function(event) {
 		$("[href='#port']").trigger('click');
 	});
+
+  $(document).on('click', '#btnSelectLocal', function(event) {
+    ipcRenderer.send('selectLocalFirmware');
+  });
 
 	$(document).on('click', '#btnBasetune', function(event) {
 		$("[href='#basetunes']").trigger('click');

@@ -1,4 +1,4 @@
-const { app, BrowserWindow, ipcMain, shell } = require('electron')
+const { app, BrowserWindow, ipcMain, shell, dialog } = require('electron')
 const {download} = require('electron-dl')
 const {execFile} = require('child_process');
 const fs = require('fs');
@@ -135,6 +135,19 @@ ipcMain.on('installWinDrivers', (e, args) => {
 
   const child = execFile("rundll32", execArgs);
 
+});
+
+ipcMain.on('selectLocalFirmware', (e, args) => {
+  localFirmware = dialog.showOpenDialogSync({ 
+    properties: ['openFile'], 
+    title: "Select hex file", 
+    filters: [{ name: 'Firmware hex', extensions: ['hex'] }] })
+
+  if(localFirmware != undefined)
+  {
+    console.log("Localfirmware selected: " + localFirmware[0] + "")
+    e.sender.send( "add local hex", localFirmware[0], 1 );
+  }
 });
 
 ipcMain.on('uploadFW', (e, args) => {
