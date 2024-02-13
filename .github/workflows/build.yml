@@ -1,7 +1,7 @@
 name: Build binaries for Windows (64-bit), linux (64-bit) and macos (x86-64)
 on:
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   Build-for-linux:
