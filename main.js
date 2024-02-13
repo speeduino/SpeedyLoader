@@ -142,8 +142,8 @@ ipcMain.on('installWinDrivers', (e, args) => {
 ipcMain.on('selectLocalFirmware', (e, args) => {
   localFirmware = dialog.showOpenDialogSync({ 
     properties: ['openFile'], 
-    title: "Select hex file", 
-    filters: [{ name: 'Firmware hex', extensions: ['hex'] }] })
+    title: "Select firmware file", 
+    filters: [{ name: 'Firmware binary', extensions: ['hex', 'bin'] }] })
 
   if(localFirmware != undefined)
   {

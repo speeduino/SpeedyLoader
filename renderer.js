@@ -4,6 +4,8 @@ const {ipcRenderer} = require("electron")
 const { shell } = require('electron')
 
 var basetuneList = [];
+var useLocalTune = false;
+var localTuneFile = "";
 
 function getTeensyVersion(id)
 {
@@ -411,6 +413,7 @@ function refreshBasetunesDescription()
 ipcRenderer.on("add local hex", (event, filename, state) => 
 {
   //Check if Local option already exists
+  /*
   var lastOption = document.getElementById('versionsSelect').lastElementChild
   if(lastOption.innerHTML == "Local")
   {
@@ -425,6 +428,11 @@ ipcRenderer.on("add local hex", (event, filename, state) =>
     var select = document.getElementById('versionsSelect');
     select.appendChild(newOption);
   }
+  */
+ useLocalTune = true;
+ localTuneFile = filename;
+ document.getElementById('versionsSelect').disabled = true;
+ //console.log("Local hex file selected: " + filename);
 
   //Jump to the port selection screen
   $("[href='#port']").trigger('click');
@@ -474,7 +482,7 @@ function downloadHex(board, localFile="")
 function downloadIni()
 {
     var e = document.getElementById('versionsSelect');
-    if(e.options[e.selectedIndex].innerHTML == "Local") 
+    if(useLocalTune) 
     {
       console.log("Local version selected, not downloading ini");
       return;
@@ -520,6 +528,62 @@ function installDrivers()
 
 }
 
+function downloadComplete(file)
+{
+  //Lookup what platform we're using
+  var portSelect = document.getElementById('portsSelect');
+  var uploadBoard = portSelect.options[portSelect.selectedIndex].getAttribute("board");
+  var extension = file.substr(file.length - 3);
+  if(extension == "ini")
+  {
+      statusText.innerHTML = "Downloading firmware"
+      document.getElementById('iniFileText').style.display = "block"
+      document.getElementById('iniFileLocation').innerHTML = file
+      downloadHex(uploadBoard);
+  }
+  else if(extension == "hex" || extension == "bin")
+  {
+    console.log("Uploading da file!!");
+    statusText.innerHTML = "Beginning upload..."
+
+    //Retrieve the select serial port
+    var e = document.getElementById('portsSelect');
+    uploadPort = e.options[e.selectedIndex].value;
+    
+    console.log("Using port: " + uploadPort);
+
+    //Show the sponsor banner
+    document.getElementById('sponsorbox').style.display = "block"
+
+    //Begin the upload
+    if(uploadBoard.includes("TEENSY"))
+    {
+      console.log("Uploading using Teensy_loader")
+      ipcRenderer.send("uploadFW_teensy", {
+        port: uploadPort,
+        firmwareFile: file,
+        board: uploadBoard
+      });
+    }
+    else if(uploadBoard.includes("STM32F407"))
+    {
+      console.log("Uploading using DFU Util")
+      ipcRenderer.send("uploadFW_stm32", {
+        port: uploadPort,
+        firmwareFile: file,
+        board: uploadBoard
+      });
+    }
+    else
+    {
+      ipcRenderer.send("uploadFW", {
+          port: uploadPort,
+          firmwareFile: file
+      });
+    }
+  }
+}
+
 function uploadFW()
 {
 
@@ -534,10 +598,6 @@ function uploadFW()
     spinner.classList.remove('fa-times');
     spinner.classList.add('fa-spinner');
 
-    //Lookup what platform we're using
-    var portSelect = document.getElementById('portsSelect');
-    var uploadBoard = portSelect.options[portSelect.selectedIndex].getAttribute("board");
-
     //Hide the terminal section incase it was there from a previous burn attempt
     document.getElementById('terminalSection').style.display = "none";
     //Same for the ini location link
@@ -545,61 +605,23 @@ function uploadFW()
 
     var statusText = document.getElementById('statusText');
     var burnPercentText = document.getElementById('burnPercent');
-    statusText.innerHTML = "Downloading INI file"
-    downloadIni();
+    
+
+    if(useLocalTune)
+    {
+      //ipcRenderer.send("download complete", { file: localTuneFile, state: "complete" });
+      downloadComplete(localTuneFile);
+    }
+    else
+    {
+      statusText.innerHTML = "Downloading INI file"
+      downloadIni();
+    }
 
     ipcRenderer.on("download complete", (event, file, state) => {
         console.log("Saved file: " + file); // Full file path
-
-        var extension = file.substr(file.length - 3);
-        if(extension == "ini")
-        {
-            statusText.innerHTML = "Downloading firmware"
-            document.getElementById('iniFileText').style.display = "block"
-            document.getElementById('iniFileLocation').innerHTML = file
-            downloadHex(uploadBoard);
-        }
-        else if(extension == "hex" || extension == "bin")
-        {
-          console.log("Uploading da file!!");
-            statusText.innerHTML = "Beginning upload..."
-
-            //Retrieve the select serial port
-            var e = document.getElementById('portsSelect');
-            uploadPort = e.options[e.selectedIndex].value;
-            
-            console.log("Using port: " + uploadPort);
-
-            //Show the sponsor banner
-            document.getElementById('sponsorbox').style.display = "block"
-
-            //Begin the upload
-            if(uploadBoard.includes("TEENSY"))
-            {
-              console.log("Uploading using Teensy_loader")
-              ipcRenderer.send("uploadFW_teensy", {
-                port: uploadPort,
-                firmwareFile: file,
-                board: uploadBoard
-              });
-            }
-            else if(uploadBoard.includes("STM32F407"))
-            {
-              console.log("Uploading using DFU Util")
-              ipcRenderer.send("uploadFW_stm32", {
-                port: uploadPort,
-                firmwareFile: file,
-                board: uploadBoard
-              });
-            }
-            else
-            {
-              ipcRenderer.send("uploadFW", {
-                  port: uploadPort,
-                  firmwareFile: file
-              });
-            }
-        }
+        downloadComplete(file);
+        
     });
 
     ipcRenderer.on("upload completed", (event, code) => {
