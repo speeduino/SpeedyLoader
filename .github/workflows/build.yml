@@ -9,10 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-    - name: Setup Node, Electron and built
+    - name: Setup Node
       uses: actions/setup-node@v3
       with:
         node-version: '19.x'
+    - name: Install Electron and build
       run: |
         npm install electron-rebuild -g
         npm install electron-builder -g
@@ -33,6 +34,7 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '19.x'
+    - name: Install Electron and build
       run: |
         npm install electron-rebuild -g
         npm install electron-builder -g
@@ -53,6 +55,7 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: '19.x'
+    - name: Install Electron and build
       run: |
         npm install electron-rebuild -g
         npm install electron-builder -g
