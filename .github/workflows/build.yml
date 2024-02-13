@@ -11,7 +11,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: awalsh128/cache-apt-pkgs-action@latest
         with:
-          packages: libusb-1.0-0 libusb-0.1-4:i386
+          packages: libusb-1.0-0 libusb-1.0-0-dev
           version: 1.0
       - name: Setup Node
         uses: actions/setup-node@v3
@@ -40,7 +40,7 @@ jobs:
           node-version: '19.x'
       - name: Install Electron and build
         run: |
-          python3 -m pip install packaging
+          python3 -m pip install setuptools
           npm install electron-rebuild -g
           npm install electron-builder -g
           npm install
