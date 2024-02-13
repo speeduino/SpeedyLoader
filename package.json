@@ -11,6 +11,7 @@
     "package-mac-workflow": "electron-builder --publish never --mac",
     "package-win": "electron-builder --win",
     "package-linux": "electron-builder --linux",
+    "package-linux-workflow": "electron-builder --publish never --linux",
     "package-arm": "electron-builder --linux --armv7l"
   },
   "repository": {
