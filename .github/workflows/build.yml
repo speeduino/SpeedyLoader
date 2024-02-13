@@ -1,0 +1,66 @@
+name: Attempt to build binaries for Windows (64-bit), linux (64-bit) and macos (x86-64)
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  Build-for-linux:
+    name: Run npm on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node, Electron and built
+      uses: actions/setup-node@v3
+      with:
+        node-version: '19.x'
+      run: |
+        npm install electron-rebuild -g
+        npm install electron-builder -g
+        npm install
+        npm run package-linux
+    - name: Save .appimage as artefact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Artefact for linux build
+        path: dist
+
+  Build-for-mac:
+    name: Run npm on x64 macos
+    runs-on: macos-12
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node, Electron and built
+      uses: actions/setup-node@v3
+      with:
+        node-version: '19.x'
+      run: |
+        npm install electron-rebuild -g
+        npm install electron-builder -g
+        npm install
+        npm run package-mac
+    - name: Save .dmg as artefact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Artefact for Mac build
+        path: dist
+
+  Build-for-win:
+    name: Run npm on x64 Windows
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup Node, Electron and built
+      uses: actions/setup-node@v3
+      with:
+        node-version: '19.x'
+      run: |
+        npm install electron-rebuild -g
+        npm install electron-builder -g
+        npm install
+        npm run package-mac
+    - name: Save .exe as artefact
+      uses: actions/upload-artifact@v4
+      with:
+        name: Artefact for Win build
+        path: dist
+
