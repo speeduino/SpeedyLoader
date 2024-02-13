@@ -8,6 +8,7 @@
     "start": "electron .",
     "install": "electron-rebuild -f",
     "package-mac": "electron-builder --mac",
+    "package-mac-workflow": "electron-builder --publish never --mac",
     "package-win": "electron-builder --win",
     "package-linux": "electron-builder --linux",
     "package-arm": "electron-builder --linux --armv7l"
