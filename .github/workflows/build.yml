@@ -9,6 +9,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - uses: awalsh128/cache-apt-pkgs-action@latest
+        with:
+          packages: libusb-1.0-0 libusb-0.1-4:i386
+          version: 1.0
       - name: Setup Node
         uses: actions/setup-node@v3
         with:
@@ -36,6 +40,7 @@ jobs:
           node-version: '19.x'
       - name: Install Electron and build
         run: |
+          python3 -m pip install packaging
           npm install electron-rebuild -g
           npm install electron-builder -g
           npm install
@@ -60,7 +65,7 @@ jobs:
           npm install electron-rebuild -g
           npm install electron-builder -g
           npm install
-          npm run package-mac
+          npm run package-win
       - name: Save .exe as artefact
         uses: actions/upload-artifact@v4
         with:
