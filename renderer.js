@@ -141,7 +141,7 @@ function refreshSerialPorts()
     
     
     var button = document.getElementById("btnInstall")
-    if(ports.length > 0) 
+    if(select.length > 0) 
     {
         select.selectedIndex = 0;
         button.disabled = false;
