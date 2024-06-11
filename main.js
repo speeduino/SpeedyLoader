@@ -266,7 +266,8 @@ ipcMain.on("uploadFW_stm32", (e, args) => {
   executableName = executableName.replace('app.asar',''); //This is important for allowing the binary to be found once the app is packaed into an asar
   //console.log(executableName);
 
-  var execArgs = ['-d', '0x0483:0xDF11', '-a', '0', '-s', '0x08000000:leave', '-D', args.firmwareFile];
+  var deviceString = args.vid + ":" + args.pid;
+  var execArgs = ['-d', deviceString, '-a', '0', '-s', '0x08000000:leave', '-D', args.firmwareFile];
   //console.log(execArgs);
 
   if(process.platform == "win32") { executableName = executableName + '.exe'; } //This must come after the configName line above

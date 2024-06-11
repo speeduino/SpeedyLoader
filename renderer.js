@@ -119,17 +119,18 @@ function refreshSerialPorts()
     })
 
     //Look for any STM32 devices in DFU mode
-    var uninitialisedTeensyDevices = usb.getDeviceList().filter( function(d) {
+    var stmDFUDevices = usb.getDeviceList().filter( function(d) {
       return d.deviceDescriptor.idVendor===0x0483 && d.deviceDescriptor.bcdDevice===0x2200; //Interface class 3 is HID
     });
-    uninitialisedTeensyDevices.forEach((device, index) => {
-      console.log("STM32 in DFU mode found: ", getTeensyVersion(device.deviceDescriptor.bcdDevice))
+    stmDFUDevices.forEach((device, index) => {
+      console.log("STM32 in DFU mode found: ", device.deviceDescriptor.bcdDevice)
+      console.log("STM32 PID: ", device.deviceDescriptor.idProduct.toString(16).toUpperCase())
       var newOption = document.createElement('option');
       newOption.value = "STM32F407_DFU";
-      var teensyVersion = getTeensyVersion(device.deviceDescriptor.bcdDevice);
       newOption.innerHTML = "STM32F407 in DFU mode";
-      teensyVersion = teensyVersion.replace(".", "");
       newOption.setAttribute("board", "STM32F407_DFU");
+      newOption.setAttribute("vid", device.deviceDescriptor.idVendor.toString(16).toUpperCase());
+      newOption.setAttribute("pid", device.deviceDescriptor.idProduct.toString(16).toUpperCase());
       select.add(newOption);
     })
     /*
@@ -571,7 +572,9 @@ function downloadComplete(file)
       ipcRenderer.send("uploadFW_stm32", {
         port: uploadPort,
         firmwareFile: file,
-        board: uploadBoard
+        board: uploadBoard,
+        vid: portSelect.options[portSelect.selectedIndex].getAttribute("vid"),
+        pid: portSelect.options[portSelect.selectedIndex].getAttribute("pid")
       });
     }
     else
