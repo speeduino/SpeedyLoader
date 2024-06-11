@@ -272,21 +272,22 @@ ipcMain.on("uploadFW_stm32", (e, args) => {
   if(process.platform == "win32") { executableName = executableName + '.exe'; } //This must come after the configName line above
   
   console.log(executableName);
+  dfuutilErr = "Executing Cmd: "+ executableName;
   const child = execFile(executableName, execArgs);
 
-  child.stdout.on('data', (data) => {
-    console.log(`dfu-util stdout:\n${data}`);
+  child.stderr.on('data', (data) => {
+    console.log(`dfu-util stderr:\n${data}`);
   });
 
-  child.stderr.on('data', (data) => {
-    console.log(`dfu-util stderr: ${data}`);
+  child.stdout.on('data', (data) => {
+    console.log(`dfu-util stdout: ${data}`);
+    console.log("Data Length: "+data.length);
     dfuutilErr = dfuutilErr + data;
 
     //Check if avrdude has started the actual burn yet, and if so, track the '#' characters that it prints. Each '#' represents 1% of the total burn process (50 for write and 50 for read)
     if (burnStarted == true)
     {
-      if(data=="#") { burnPercent += 1; }
-      e.sender.send( "upload percent", burnPercent );
+      e.sender.send( "upload percent", (4*(data.split("=").length - 1)) );
     }
     else
     {
@@ -313,7 +314,7 @@ ipcMain.on("uploadFW_stm32", (e, args) => {
     {
       console.log(`dfu-util process exited with code ${code}`);
       e.sender.send( "upload error", dfuutilErr )
-      teensyLoaderErr = "";
+      dfuutilErr = "";
     }
     else
     {
