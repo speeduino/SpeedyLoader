@@ -14,6 +14,7 @@ var teensyLoaderIsRunning = false;
 var dfuutilIsRunning = false;
 var teensyLoaderErr = ""
 var dfuutilErr = ""
+var dfuUtilStatus = ""
 
 function createWindow () 
 {
@@ -238,7 +239,6 @@ ipcMain.on('uploadFW', (e, args) => {
 });
 
 ipcMain.on("uploadFW_stm32", (e, args) => {
-  //"dfu-util" -d 0x0483:0xDF11 -a 0 -s 0x08000000:leave -D"
   if(dfuutilIsRunning == true) { return; }
   dfuutilIsRunning = true; //Indicate that an avrdude process has started
   var platform;
@@ -270,20 +270,21 @@ ipcMain.on("uploadFW_stm32", (e, args) => {
   var execArgs = ['-d', deviceString, '-a', '0', '-s', '0x08000000:leave', '-D', args.firmwareFile];
   //console.log(execArgs);
 
-  if(process.platform == "win32") { executableName = executableName + '.exe'; } //This must come after the configName line above
+  if(process.platform == "win32") { executableName = executableName + '-static.exe'; } //This must come after the configName line above
   
   console.log(executableName);
-  dfuutilErr = "Executing Cmd: "+ executableName;
+  dfuutilErr = "Executing Cmd: "+ executableName + "\n";
   const child = execFile(executableName, execArgs);
 
   child.stderr.on('data', (data) => {
     console.log(`dfu-util stderr:\n${data}`);
+    dfuutilErr = dfuutilErr + data;
   });
 
   child.stdout.on('data', (data) => {
     console.log(`dfu-util stdout: ${data}`);
     console.log("Data Length: "+data.length);
-    dfuutilErr = dfuutilErr + data;
+    dfuUtilStatus = dfuUtilStatus + data;
 
     //Check if avrdude has started the actual burn yet, and if so, track the '#' characters that it prints. Each '#' represents 1% of the total burn process (50 for write and 50 for read)
     if (burnStarted == true)
@@ -293,7 +294,7 @@ ipcMain.on("uploadFW_stm32", (e, args) => {
     else
     {
       //This is a hack, but basically watch the output from teensy loader for the term 'Writing | ', everything after that is the #s indicating 1% of burn. 
-      if(dfuutilErr.includes("Erase    done."))
+      if(dfuUtilStatus.includes("Erase    done."))
       {
         burnStarted = true;
       }
@@ -314,6 +315,13 @@ ipcMain.on("uploadFW_stm32", (e, args) => {
     if (code !== 0) 
     {
       console.log(`dfu-util process exited with code ${code}`);
+      dfuutilErr = dfuutilErr + `dfu-util process exited with code ${code} \n`;
+
+      if(code == 74)
+      {
+        dfuutilErr = dfuutilErr + "Uploading to STM32 devices requires libusb to be installed. Please see: https://github.com/libusb/libusb/wiki/Windows#How_to_use_libusb_on_Windows";
+      }
+
       e.sender.send( "upload error", dfuutilErr )
       dfuutilErr = "";
     }
