@@ -80,14 +80,18 @@
         <div class="inner">
         <h2>Select Serial Port</h2>
         <p>Available Ports:
-        <select name="ports" class="select" id="portsSelect" size="10" width="20"></select>
+        <select name="ports" class="select" id="portsSelect" size="10" width="20" onClick="checkForValidPort()"></select>
         <ul class="actions">
                 <!--  <li><input type='button' value="Install Serial Drivers" onclick="installDrivers();" /></li> -->
                 <li><input type='button' value="Refresh" onclick="refreshSerialPorts();" /></li>
                 <li><input type='button' value="Upload" id="btnInstall" /></li>
         </ul>
+        <div class="features major" id="port_warning" style="display: none;">
+            <div id="port_warningText" style="padding-left: 0.9em; padding-right: 0.9em; overflow-y: scroll; height: 10vh;"></div>
+        </div>
         </p>
         </div>
+        
        
         <div id="serialDetectError"></div>
 </section>

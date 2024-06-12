@@ -152,6 +152,33 @@ function refreshSerialPorts()
   })
 }
 
+//Checks whether the port currently selected is a known invalid one or not
+function checkForValidPort()
+{
+  var validPort = true;
+  var errorText = ""
+  var option = document.getElementById('portsSelect').options[document.getElementById('portsSelect').selectedIndex];
+
+  if(option.getAttribute('board') == "STM32F407_serial")
+  {
+    validPort = false;
+    errorText = "Serial mode is not supported on STM32F407 boards. Please place the board into DFU mode instead.";
+  }
+
+  if(validPort)
+  {
+    document.getElementById('port_warning').style.display = "none";
+    document.getElementById('port_warningText').innerHTML = "";
+    document.getElementById('btnInstall').disabled = false;
+  }
+  else
+  {
+    document.getElementById('port_warning').style.display = "block";
+    document.getElementById('port_warningText').innerHTML = errorText;
+    document.getElementById('btnInstall').disabled = true;
+  }
+}
+
 function refreshDetails()
 {
     var selectElement = document.getElementById('versionsSelect');
