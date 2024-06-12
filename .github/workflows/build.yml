@@ -70,5 +70,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Artefact for Win build
-          path: dist
+          path: dist/*.exe
 
