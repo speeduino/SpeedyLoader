@@ -706,7 +706,6 @@ window.onload = function () {
     refreshBasetunes();
     refreshSerialPorts();
     checkForUpdates();
-    
 };
 
 $(function(){
@@ -766,5 +765,9 @@ $(function(){
       ipcRenderer.invoke('show-ini', location);
     }
 	});
+
+  //Detect devices hotplug
+  usb.usb.on('attach', refreshSerialPorts);
+  usb.usb.on('detach', refreshSerialPorts);
 
 }); 
