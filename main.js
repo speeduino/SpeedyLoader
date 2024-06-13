@@ -282,21 +282,27 @@ ipcMain.on("uploadFW_stm32", (e, args) => {
   });
 
   child.stdout.on('data', (data) => {
-    console.log(`dfu-util stdout: ${data}`);
+    console.log("dfu-util stdout: "+data);
     console.log("Data Length: "+data.length);
     dfuUtilStatus = dfuUtilStatus + data;
 
-    //Check if avrdude has started the actual burn yet, and if so, track the '#' characters that it prints. Each '#' represents 1% of the total burn process (50 for write and 50 for read)
+    //Check if dfu-util has started the actual burn yet or is still erasing
     if (burnStarted == true)
     {
-      e.sender.send( "upload percent", (4*(data.split("=").length - 1)) );
+      //This is a hack, but basically watch the output from dfu-util for the '=', each '=' represents 4% of burn.
+      var progressBarRead = data.split("=").length - 1;
+      if( (progressBarRead > 0) && (data.length >= 60) )
+      { 
+        e.sender.send( "upload percent", (4*progressBarRead) );
+      }
     }
     else
     {
-      //This is a hack, but basically watch the output from teensy loader for the term 'Writing | ', everything after that is the #s indicating 1% of burn. 
+      //Watch until the erase has been completed
       if(dfuUtilStatus.includes("Erase    done."))
       {
         burnStarted = true;
+        e.sender.send( "upload percent", 0 );
       }
     }
     
