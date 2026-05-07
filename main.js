@@ -357,7 +357,7 @@ function uploadFW_teensy(e, args)
   //All Mac builds use the 64-bit binary
   else if(process.platform == "darwin") 
   { 
-    platform = "teensy_loader_cli-darwin-x86_64";
+    platform = "teensy_loader_cli-darwin-universal";
   }
   else if(process.platform == "linux") 
   { 

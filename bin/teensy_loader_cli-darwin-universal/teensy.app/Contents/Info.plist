@@ -11,7 +11,7 @@
 	<key>CFBundleName</key>
 	<string>Teensy</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.57</string>
+	<string>1.60</string>
 	<key>LSHasLocalizedDisplayName</key>
 	<false/>
 	<key>NSHumanReadableCopyright</key>
@@ -27,7 +27,7 @@
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleVersion</key>
-	<string>1.57</string>
+	<string>1.60</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.7.0</string>
 	<key>LSRequiresNativeExecution</key>

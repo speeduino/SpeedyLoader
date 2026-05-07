@@ -1,0 +1,15 @@
+{
+  "name": "tool-teensy",
+  "version": "1.160.0",
+  "description": "Upload tools for Teensy boards",
+  "keywords": [
+    "tools",
+    "uploader",
+    "teensy"
+  ],
+  "homepage": "https://www.pjrc.com/teensy/loader.html",
+  "system": [
+    "darwin_x86_64",
+    "darwin_arm64"
+  ]
+}
